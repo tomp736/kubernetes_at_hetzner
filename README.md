@@ -1,2 +1,2 @@
 # k8s_cloud
-No frills cluster on hetzner using terraform and ansible.
+No frills k8s cluster on hetzner using terraform and ansible.
