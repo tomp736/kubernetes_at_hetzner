@@ -1,0 +1,13 @@
+- name: Configure Nodes
+  hosts: all
+  remote_user: sysadmin
+  become: yes
+
+  collections:
+  - awesome.ansible_awesome
+  
+  roles:
+      
+    - role: node
+      state: present
+      

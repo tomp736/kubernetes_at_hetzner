@@ -1,0 +1,12 @@
+- name: Configure Master
+  hosts: master
+  remote_user: sysadmin
+  become: yes
+
+  collections:
+  - awesome.ansible_awesome
+  
+  roles:
+      
+    - role: master
+      state: present

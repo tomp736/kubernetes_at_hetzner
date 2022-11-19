@@ -1,0 +1,36 @@
+- name: Create Merged Dictionary
+  ansible.builtin.set_fact: 
+    kubernetes: "{{ worker_defaults | combine(worker_group) | combine(worker) }}"
+    discovery: "{{ hostvars['c0m0']['discovery'] }}"
+
+- name: Debug Merged Dictionary
+  ansible.builtin.debug: 
+    var: kubernetes
+
+- name: Debug Merged Dictionary
+  ansible.builtin.debug: 
+    var: discovery
+
+- name: Copy discovery.conf for kubeadm init.
+  ansible.builtin.template:
+    src: "templates/discovery.conf.j2"
+    dest: /root/discovery.conf
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Copy kubeadm_join.yaml for kubeadm join.
+  ansible.builtin.template:
+    src: "templates/kubeadm_join.yaml.j2"
+    dest: /root/kubeadm_join.yaml
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Restart container runtime
+  ansible.builtin.service:
+    name: containerd
+    state: restarted 
+
+- name: Run kubeadm init.
+  ansible.builtin.shell: kubeadm join --config=/root/kubeadm_join.yaml | tee kubeadm_join.out

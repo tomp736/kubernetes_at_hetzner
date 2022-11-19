@@ -1,0 +1,12 @@
+- name: Configure Worker
+  hosts: worker
+  remote_user: sysadmin
+  become: yes
+
+  collections:
+  - awesome.ansible_awesome
+
+  roles:
+      
+    - role: worker
+      state: present

@@ -1,0 +1,47 @@
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+nodeRegistration:
+  taints: null
+  name: {{ ansible_facts['fqdn'] }}
+  criSocket: "unix:///var/run/containerd/containerd.sock"
+  ignorePreflightErrors: 
+    - Swap
+    - NumCPU
+    - IsPrivilegedUser  
+localAPIEndpoint:
+  advertiseAddress: {{ ansible_facts['ens10']['ipv4']['address'] }}
+  bindPort: {{ kubernetes['bindPort'] }}
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+networking:
+  serviceSubnet: {{ kubernetes['serviceSubnet'] }}
+  podSubnet: {{ kubernetes['podSubnet'] }}
+  dnsDomain: cluster.local
+kubernetesVersion: {{ kubernetes['kubernetesVersion'] }}
+controlPlaneEndpoint: "{{ ansible_facts['ens10']['ipv4']['address'] }}:{{ kubernetes['bindPort'] }}"
+apiServer:
+  certSANs:
+  - "{{ ansible_facts['fqdn'] }}"
+  timeoutForControlPlane: 10m0s
+certificatesDir: "/etc/kubernetes/pki"
+clusterName: {{ kubernetes['clusterName'] }}
+controllerManager: {}
+scheduler: {}
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+eventRecordQPS: 0
+protectKernelDefaults: true
+tlsCipherSuites:
+  - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+  - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+  - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+  - TLS_RSA_WITH_AES_256_GCM_SHA384
+  - TLS_RSA_WITH_AES_128_GCM_SHA256

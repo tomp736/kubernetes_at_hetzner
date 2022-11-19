@@ -1,0 +1,5 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: {{ discovery['ca_data'] }}
+    server: {{ discovery['server'] }}

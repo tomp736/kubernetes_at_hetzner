@@ -1,0 +1,7 @@
+---
+# file: site.yml
+
+- import_playbook: playbooks/hardening.yml
+- import_playbook: playbooks/node.yml
+- import_playbook: playbooks/master.yml
+- import_playbook: playbooks/worker.yml
