@@ -7,7 +7,6 @@ Requirements:
 - terraform
 - ansible
 - hcloud_token
-- access token to gitlab.labrats.work
 
 ---
 
