@@ -1,4 +1,4 @@
-# k8s_cloud
+# awesome_kubernetes
 
 No frills kubernetes cluster on hetzner cloud.
 
