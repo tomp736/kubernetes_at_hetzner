@@ -63,10 +63,13 @@ jobs:
 
     - name: Copy inventory
       run: cp secrets/main_inventory ansible/inventory
+
     - name: Run playbook
-      uses: jawher/action-ansible@2.9.7
-      env:
-        ANSIBLE_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        ANSIBLE_CONFIG: ansible/ansible.cfg
+      uses: dawidd6/action-ansible-playbook@v2
       with:
-        args: ansible-playbook -i ansible/inventory ansible/site.yml
+        playbook: site.yml
+        directory: ./ansible
+        key: ${{secrets.SSH_PRIVATE_KEY}}
+        requirements: requirements.yml
+        options: |
+          -i inventory
