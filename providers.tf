@@ -2,7 +2,7 @@
 
 terraform {
   backend "local" {
-    path = "terraform.tfstate"
+    path = "secrets/terraform.tfstate"
   }
   required_providers {
     hcloud = {

@@ -31,7 +31,7 @@ jobs:
       with:
         repository: tomp736/awesome_kubernetes_secrets
         token: ${{ secrets.SECRETS_PAT }}
-        path: secrets
+        path: ./secrets
         ref: main
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
@@ -55,3 +55,9 @@ jobs:
     - name: Terraform Apply
       if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
+
+    - name: Commit changes
+      uses: devops-infra/action-commit-push
+      working-directory: ./secrets
+      with:
+        github_token: ${{ secrets.SECRETS_PAT }}
