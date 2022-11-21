@@ -1,12 +1,16 @@
 # awesome_kubernetes
 
-### Awesome repository for kubernetes cluster provisioned on hetzner cloud using ansible and terraform.
+## Awesome repository for kubernetes cluster
+
+Provisioned on hetzner cloud using ansible and terraform
 
 Requirements:
 
 - terraform
 - ansible
 - hcloud_token
+
+Uses local backend unless otherwise specified in terraform.
 
 ---
 
