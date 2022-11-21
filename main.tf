@@ -34,5 +34,5 @@ resource "local_file" "ansible_inventory" {
 %{if node.nodetype == "proxy"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor~}
   EOT
-  filename = "ansible/inventory"
+  filename = "secrets/main_inventory"
 }
