@@ -4,9 +4,8 @@
   become: yes
 
   collections:
-  - awesome.ansible_awesome
+  - tomp736.ansible_awesome
   
-  roles:
-      
-    - role: master
-      state: present
+  tasks:      
+  - ansible.builtin.import_role:
+      name: tomp736.ansible_awesome.kubernetes_master

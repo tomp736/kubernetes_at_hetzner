@@ -1,3 +1,0 @@
-worker_defaults:
-  kubernetesVersion: "1.25.0"
-  clusterName: c0

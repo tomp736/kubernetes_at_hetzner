@@ -4,10 +4,15 @@
   become: yes
 
   collections:
-  - awesome.ansible_awesome
+  - tomp736.ansible_awesome  
   
-  roles:
-      
-    - role: node
-      state: present
-      
+  tasks:      
+  - ansible.builtin.import_role:
+      name: tomp736.ansible_awesome.containerd
+
+  - ansible.builtin.import_role:
+      name: tomp736.ansible_awesome.open_isci
+
+  - ansible.builtin.import_role:
+      name: tomp736.ansible_awesome.kubernetes_node
+        
