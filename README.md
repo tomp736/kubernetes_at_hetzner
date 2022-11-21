@@ -1,6 +1,6 @@
 # awesome_kubernetes
 
-### No frills kubernetes cluster on hetzner cloud.
+### Awesome repository for kubernetes cluster provisioned on hetzner cloud using ansible and terraform.
 
 Requirements:
 
