@@ -1,5 +1,5 @@
 # requirements.yml
 collections:
-  - name: git@github.com:tomp736/awesome_ansible.git
+  - name: https://github.com/tomp736/awesome_ansible
     type: git
   - name: devsec.hardening
