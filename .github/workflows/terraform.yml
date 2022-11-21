@@ -58,5 +58,6 @@ jobs:
 
     - name: Commit changes
       uses: EndBug/add-and-commit@v9
+      if: always()
       with:
         cwd: './secrets'
