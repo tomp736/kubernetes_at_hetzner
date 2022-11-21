@@ -26,14 +26,15 @@ hcloud_token = "{{ hcloud_token }}"
 
 ``` bash
 # apply-tf,sh
-terraform apply --var-file=default.tfvar
+terraform apply --var-file=secrets/main.tfvar
 ```
 
 ### Ansible will configure kubernetes nodes using generated inventory file
 
 ```bash
-# apply-ansbile,sh
+# apply-ansible,sh
 # install requirements and run playbook
+cp secrets/main_inventory ansible/inventory
 cd ansible
 ansible-galaxy install -r requirements.yml
 ansible-playbook -i inventory site.yml
