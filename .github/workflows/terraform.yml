@@ -60,3 +60,14 @@ jobs:
       if: always()
       with:
         cwd: './secrets'
+
+    - name: Copy inventory
+      run: cp secrets/main_inventory ansible/inventory
+
+    - name: Run playbook
+      uses: dawidd6/action-ansible-playbook@v2
+      with:
+        directory: ./ansible
+        requirements: requirements.yml
+        playbook: site.yml
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
