@@ -23,12 +23,16 @@ jobs:
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        ref: main
 
     - name: Checkout secrets repository.
       uses: actions/checkout@v3
       with:
         repository: tomp736/awesome_kubernetes_secrets
-        token: ${{ secrets.secrets_pat }}
+        token: ${{ secrets.SECRETS_PAT }}
+        path: secrets
+        ref: main
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
