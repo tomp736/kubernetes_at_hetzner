@@ -57,7 +57,7 @@ jobs:
       run: terraform apply -auto-approve -input=false
 
     - name: Commit changes
-      uses: devops-infra/action-commit-push
+      uses: devops-infra/action-commit-push@master
       working-directory: ./secrets
       with:
         github_token: ${{ secrets.SECRETS_PAT }}
