@@ -55,7 +55,7 @@ jobs:
     - name: Terraform Apply
       run: terraform apply -auto-approve -input=false --var-file=secrets/main.tfvars
 
-    - name: Commit changes
+    - name: Commit secrets repository changes.
       uses: EndBug/add-and-commit@v9
       if: always()
       with:
