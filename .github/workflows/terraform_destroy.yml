@@ -1,0 +1,52 @@
+name: 'Terraform'
+
+on:
+  schedule:
+    - cron:  '0 0 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    environment: production
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: main
+
+    - name: Checkout secrets repository.
+      uses: actions/checkout@v3
+      with:
+        repository: tomp736/awesome_kubernetes_secrets
+        token: ${{ secrets.SECRETS_PAT }}
+        path: ./secrets
+        ref: main
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init
+
+    # Destroy
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve -input=false --var-file=secrets/main.tfvars
+
+    - name: Commit secrets repository changes.
+      uses: EndBug/add-and-commit@v9
+      if: always()
+      with:
+        cwd: './secrets'
