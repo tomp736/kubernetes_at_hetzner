@@ -23,6 +23,7 @@ resource "hcloud_server" "node" {
 
   provisioner "remote-exec" {
     inline = [
+      "sleep 60",
       "cloud-init status --wait"
     ]
     on_failure = continue
