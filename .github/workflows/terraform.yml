@@ -65,11 +65,7 @@ jobs:
       run: cp secrets/main_inventory ansible/inventory
 
     - name: Run playbook
-      uses: dawidd6/action-ansible-playbook@v2
+      uses: labrats-work/action-ansible@v1
       with:
-        playbook: site.yml
-        directory: ./ansible
-        key: ${{secrets.SSH_PRIVATE_KEY}}
-        requirements: requirements.yml
-        options: |
-          -i inventory
+        workingDirectory: ./ansible
+        keyfile: ${{secrets.SSH_PRIVATE_KEY}}
