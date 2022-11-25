@@ -48,29 +48,19 @@ jobs:
       with:
         verb: apply
         planFile: tfplan
-
-    # # Generates an execution plan for Terraform
-    # - name: Terraform Plan
-    #   run: terraform plan -input=false --var-file=secrets/main.tfvars
-
-    #   # On push to "main", build or change infrastructure according to Terraform configuration files
-    #   # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    # - name: Terraform Apply
-    #   run: terraform apply -auto-approve -input=false --var-file=secrets/main.tfvars
-
     - 
       name: Commit secrets repository changes.
       uses: EndBug/add-and-commit@v9
       if: always()
       with:
         cwd: './secrets'
-
-    # - name: Copy inventory
-    #   run: cp secrets/main_inventory ansible/inventory
-
-    # - name: Run playbook
-    #   uses: labrats-work/action-ansible@v1
-    #   with:
-    #     workingDirectory: ./ansible
-    #     sshKey: ${{secrets.SSH_PRIVATE_KEY}}
+    - 
+      name: Copy inventory
+      run: cp secrets/main_inventory ansible/inventory
+    - 
+      name: Run playbook
+      uses: labrats-work/action-ansible@v1
+      with:
+        workingDirectory: ./ansible
+        sshKey: ${{secrets.SSH_PRIVATE_KEY}}
     
