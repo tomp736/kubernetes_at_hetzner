@@ -36,3 +36,12 @@ resource "local_file" "ansible_inventory" {
   EOT
   filename = "secrets/main_inventory"
 }
+
+resource "local_file" "node_ips" {
+  content  = <<-EOT
+%{for node in module.hetzner_nodes~}
+${node.ipv4_address}
+%{~endfor~}
+  EOT
+  filename = "node_ips"
+}
