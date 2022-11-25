@@ -54,7 +54,7 @@ jobs:
         cwd: './secrets'
     - 
       name: Run playbook
-      uses: labrats-work/action-ansible@v1
+      uses: labrats-work/action-ansible@main
       with:
         workingDirectory: ./ansible
         sshKey: ${{secrets.SSH_PRIVATE_KEY}}
