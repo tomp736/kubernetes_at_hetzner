@@ -38,7 +38,6 @@ jobs:
       with:
         verb: destroy
         varsFile: secrets/main.tfvars
-        planFile: tfplan
     - 
       name: Commit secrets repository changes.
       uses: EndBug/add-and-commit@v9
