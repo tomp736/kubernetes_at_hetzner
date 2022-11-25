@@ -42,6 +42,12 @@ jobs:
         verb: plan
         varsFile: secrets/main.tfvars
         planFile: tfplan
+    - 
+      name: Terraform Apply
+      uses: labrats-work/action-terraform@main
+      with:
+        verb: apply
+        planFile: tfplan
 
     # # Generates an execution plan for Terraform
     # - name: Terraform Plan
