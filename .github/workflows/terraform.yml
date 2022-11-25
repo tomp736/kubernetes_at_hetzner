@@ -69,4 +69,4 @@ jobs:
       uses: labrats-work/action-ansible@v1
       with:
         workingDirectory: ./ansible
-        keyFile: ${{secrets.SSH_PRIVATE_KEY}}
+        sshKey: ${{secrets.SSH_PRIVATE_KEY}}
