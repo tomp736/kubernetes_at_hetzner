@@ -14,7 +14,9 @@ jobs:
     name: 'Terraform'
     runs-on: ubuntu-latest
     environment: production
-    
+    env:
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
     defaults:
       run:
         shell: bash
@@ -24,7 +26,7 @@ jobs:
       name: Checkout
       uses: actions/checkout@v3
       with:
-        ref: main
+        ref: ${{ env.BRANCH_NAME }}
     - 
       name: Checkout secrets repository.
       uses: actions/checkout@v3
@@ -38,7 +40,7 @@ jobs:
       uses: labrats-work/action-terraform@main
       with:
         verb: plan
-        varsFile: secrets/main.tfvars
+        varsFile: secrets/${{ env.BRANCH_NAME }}.tfvars
         planFile: tfplan
     - 
       name: Terraform Apply
@@ -54,7 +56,7 @@ jobs:
         cwd: './secrets'
     - 
       name: Copy inventory
-      run: cp secrets/main_inventory ansible/inventory
+      run: cp secrets/${{ env.BRANCH_NAME }}_inventory ansible/inventory
     - 
       name: Run playbook
       uses: labrats-work/action-ansible@main
