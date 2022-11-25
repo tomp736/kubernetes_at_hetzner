@@ -14,14 +14,12 @@ jobs:
     name: 'Terraform'
     runs-on: ubuntu-latest
     environment: production
-
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    
     defaults:
       run:
         shell: bash
 
     steps:
-    # Checkout the repository to the GitHub Actions runner
     - 
       name: Checkout
       uses: actions/checkout@v3
@@ -55,12 +53,10 @@ jobs:
       with:
         cwd: './secrets'
     - 
-      name: Copy inventory
-      run: cp secrets/main_inventory ansible/inventory
-    - 
       name: Run playbook
       uses: labrats-work/action-ansible@v1
       with:
         workingDirectory: ./ansible
         sshKey: ${{secrets.SSH_PRIVATE_KEY}}
+        inventoryFile: secrets/inventory
     
