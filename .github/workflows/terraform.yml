@@ -22,22 +22,25 @@ jobs:
 
     steps:
     # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
+    - 
+      name: Checkout
       uses: actions/checkout@v3
       with:
         ref: main
-
-    - name: Checkout secrets repository.
+    - 
+      name: Checkout secrets repository.
       uses: actions/checkout@v3
       with:
         repository: tomp736/awesome_kubernetes_secrets
         token: ${{ secrets.SECRETS_PAT }}
         path: ./secrets
         ref: main
-
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
+    - 
+      name: Terraform Plan
+      uses: labrats-work/action-terraform@main
+      with:
+        verb: plan
+        varsFile: secrets/main.tfvars
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
