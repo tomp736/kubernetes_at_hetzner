@@ -58,11 +58,12 @@ jobs:
     # - name: Terraform Apply
     #   run: terraform apply -auto-approve -input=false --var-file=secrets/main.tfvars
 
-    # - name: Commit secrets repository changes.
-    #   uses: EndBug/add-and-commit@v9
-    #   if: always()
-    #   with:
-    #     cwd: './secrets'
+    - 
+      name: Commit secrets repository changes.
+      uses: EndBug/add-and-commit@v9
+      if: always()
+      with:
+        cwd: './secrets'
 
     # - name: Copy inventory
     #   run: cp secrets/main_inventory ansible/inventory
