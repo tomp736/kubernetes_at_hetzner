@@ -37,6 +37,7 @@ jobs:
       uses: labrats-work/action-terraform@main
       with:
         verb: destroy
+        init: yes
         varsFile: secrets/main.tfvars
     - 
       name: Commit secrets repository changes.
