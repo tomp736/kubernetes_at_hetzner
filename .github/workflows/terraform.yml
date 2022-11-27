@@ -1,9 +1,10 @@
 name: 'Terraform'
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: 
+      - main
+      
   pull_request:
 
 permissions:
@@ -59,9 +60,6 @@ jobs:
         sshKey: ${{ secrets.SSH_PRIVATE_KEY }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
-    - 
-      name: Mask IPs
-      run: xargs -a node_ips -I{} -d'\n' echo ::add-mask::{}
     - 
       name: Run playbook
       uses: labrats-work/action-ansible@main
