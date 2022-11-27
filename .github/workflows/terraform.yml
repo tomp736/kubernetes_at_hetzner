@@ -36,6 +36,11 @@ jobs:
         path: ./secrets
         ref: main
     - 
+      name: Create vars file.
+      run: |
+        echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
+        echo "tfcloud_token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> default.tfvars
+    - 
       name: Terraform Plan
       uses: labrats-work/action-terraform@main
       with:

@@ -1,7 +1,7 @@
 # ./main.tf
 
 module "network" {
-  source = "./modules/network"
+  source = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/network"
 
   network_ip_range = "10.98.0.0/16"
   network_subnet_ranges = [

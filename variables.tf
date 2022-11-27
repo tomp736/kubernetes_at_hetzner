@@ -3,3 +3,8 @@ variable "hcloud_token" {
   type        = string
   sensitive   = true
 }
+variable "tfcloud_token" {
+  description = "(Required) - The Terraform Cloud API Token"
+  type        = string
+  sensitive   = true
+}
