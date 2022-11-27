@@ -1,7 +1,8 @@
 # providers.tf
 
 terraform {
-  cloud {
+  backend "remote" {
+    hostname = "app.terraform.io"
     organization = "labrats-work"
     workspaces {
       name = "kubernetes_at_hetzner"
