@@ -33,11 +33,11 @@ jobs:
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
     - name: Create .terraform.rc file
       run: |
-        echo "# .terraformrc" > .terraformrc
-        echo "credentials \"app.terraform.io\" {" >> .terraformrc
-        echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> .terraformrc
-        echo "}" >> .terraformrc
-        cat .terraformrc
+        echo "# .terraformrc" > $HOME/.terraformrc
+        echo "credentials \"app.terraform.io\" {" >> $HOME/.terraformrc
+        echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> $HOME/.terraformrc
+        echo "}" >> $HOME/.terraformrc
+        cat $HOME/.terraformrc
     - 
       name: Terraform Plan
       uses: labrats-work/action-terraform@main
