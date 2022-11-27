@@ -31,6 +31,13 @@ jobs:
       name: Create vars file.
       run: |
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
+    - name: Create .terraform.rc file
+      run: |
+        echo # .terraformrc
+        credentials "app.terraform.io" {
+          token = "xxx.atlasv1.yyy"
+          # this being a team or user token (not an organisation token)
+        }
     - 
       name: Terraform Plan
       uses: labrats-work/action-terraform@main
