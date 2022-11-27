@@ -43,6 +43,7 @@ jobs:
         init: yes
         varsFile: secrets/${{ env.BRANCH_NAME }}.tfvars
         planFile: tfplan
+        sshKey: ${{ secrets.SSH_PRIVATE_KEY }}
     - 
       name: Terraform Apply
       uses: labrats-work/action-terraform@main
@@ -50,6 +51,7 @@ jobs:
         verb: apply
         init: yes
         planFile: tfplan
+        sshKey: ${{ secrets.SSH_PRIVATE_KEY }}
     - 
       name: Mask IPs
       run: xargs -a node_ips -I{} -d'\n' echo ::add-mask::{}
