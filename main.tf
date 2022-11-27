@@ -1,6 +1,6 @@
 # ./main.tf
 
-module "hetzner_network" {
+module "network" {
   source = "./modules/network"
 
   network_ip_range = "10.98.0.0/16"
@@ -9,7 +9,7 @@ module "hetzner_network" {
   ]
 }
 
-module "hetzner_nodes" {
+module "nodes" {
   for_each = { for node in local.nodes : node.id => node }
 
   source          = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node"
