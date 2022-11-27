@@ -12,9 +12,8 @@ module "hetzner_network" {
 module "hetzner_nodes" {
   for_each = { for node in local.nodes : node.id => node }
 
-  source          = "./modules/node"
+  source          = "git@github.com:labrats-work/modules-terraform.git//modules/hetzner/node"
   config_filepath = each.value.config_filepath
-  subnet_id       = module.hetzner_network.hetzner_subnets["10.98.0.0/24"].id
 }
 
 resource "local_file" "ansible_inventory" {
