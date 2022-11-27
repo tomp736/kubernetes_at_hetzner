@@ -19,17 +19,17 @@ module "nodes" {
 resource "local_file" "ansible_inventory" {
   content  = <<-EOT
 [master]
-%{for node in module.hetzner_nodes~}
+%{for node in module.nodes~}
 %{if node.nodetype == "master"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor~}
 
 [worker]
-%{for node in module.hetzner_nodes~}
+%{for node in module.nodes~}
 %{if node.nodetype == "worker"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor~}
 
 [proxy]
-%{for node in module.hetzner_nodes~}
+%{for node in module.nodes~}
 %{if node.nodetype == "proxy"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor~}
   EOT
@@ -38,7 +38,7 @@ resource "local_file" "ansible_inventory" {
 
 resource "local_file" "node_ips" {
   content  = <<-EOT
-%{for node in module.hetzner_nodes~}
+%{for node in module.nodes~}
 ${node.ipv4_address}
 %{~endfor~}
   EOT
