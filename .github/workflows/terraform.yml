@@ -31,7 +31,7 @@ jobs:
       name: Create vars file.
       run: |
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
-    - name: Create .terraform.rc file
+    - name: Create .terraformrc file
       run: |
         echo "# .terraformrc" > $HOME/.terraformrc
         echo "credentials \"app.terraform.io\" {" >> $HOME/.terraformrc
