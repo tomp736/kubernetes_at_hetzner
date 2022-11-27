@@ -38,6 +38,10 @@ resource "hcloud_server" "node" {
 }
 
 resource "hcloud_server_network" "node_network" {
+  depends_on = [
+    hcloud_server.node
+  ]
+
   server_id = hcloud_server.node.id
   subnet_id = var.subnet_id
 }
