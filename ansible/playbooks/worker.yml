@@ -4,10 +4,10 @@
   become: yes
 
   collections:
-  - tomp736.ansible_awesome
+  - labrats_work.modules_ansible
 
   tasks:  
   - ansible.builtin.import_role:
-      name: tomp736.ansible_awesome.kubernetes_worker
+      name: labrats_work.modules_ansible.kubernetes_worker
     vars:
       master_node: 'c0m0'

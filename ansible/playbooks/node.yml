@@ -4,15 +4,15 @@
   become: yes
 
   collections:
-  - tomp736.ansible_awesome  
+  - labrats_work.modules_ansible
   
   tasks:      
   - ansible.builtin.import_role:
-      name: tomp736.ansible_awesome.containerd
+      name: labrats_work.modules_ansible.containerd
 
   - ansible.builtin.import_role:
-      name: tomp736.ansible_awesome.open_isci
+      name: labrats_work.modules_ansible.open_isci
 
   - ansible.builtin.import_role:
-      name: tomp736.ansible_awesome.kubernetes_node
+      name: labrats_work.modules_ansible.kubernetes_node
         
