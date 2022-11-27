@@ -2,10 +2,9 @@ name: 'Terraform'
 
 on:
   push:
-    branches: 
-      - main
-      
-  pull_request:
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 permissions:
   contents: read
@@ -15,8 +14,6 @@ jobs:
     name: 'Terraform'
     runs-on: ubuntu-latest
     environment: production
-    env:
-      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
     defaults:
       run:
@@ -50,7 +47,13 @@ jobs:
         sshKey: ${{ secrets.SSH_PRIVATE_KEY }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
+    # - 
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: tfplan
+    #     path: tfplan
     - 
+      if: github.ref == 'refs/heads/main'
       name: Terraform Apply
       uses: labrats-work/action-terraform@main
       with:
@@ -61,6 +64,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
+      if: github.ref == 'refs/heads/main'
       name: Run playbook
       uses: labrats-work/action-ansible@main
       with:
