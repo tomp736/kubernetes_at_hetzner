@@ -12,7 +12,7 @@ module "hetzner_network" {
 module "hetzner_nodes" {
   for_each = { for node in local.nodes : node.id => node }
 
-  source          = "https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node"
+  source          = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node"
   config_filepath = each.value.config_filepath
 }
 
