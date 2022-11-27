@@ -44,7 +44,7 @@ jobs:
       with:
         verb: plan
         init: yes
-        varsFile: secrets/${{ env.BRANCH_NAME }}.tfvars
+        varsFile: default.tfvars
         planFile: tfplan
         sshKey: ${{ secrets.SSH_PRIVATE_KEY }}
     - 
