@@ -28,16 +28,16 @@ jobs:
       with:
         ref: ${{ env.BRANCH_NAME }}
     - 
-      name: Create vars file.
+      name: Create default.tfvars file
       run: |
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
-    - name: Create .terraformrc file
+    - 
+      name: Create default.tfrc file
       run: |
-        echo "# .terraformrc" > $HOME/.terraformrc
-        echo "credentials \"app.terraform.io\" {" >> $HOME/.terraformrc
-        echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> $HOME/.terraformrc
-        echo "}" >> $HOME/.terraformrc
-        cat $HOME/.terraformrc
+        echo "# default.tfrc" > default.tfrc
+        echo "credentials \"app.terraform.io\" {" >> default.tfrc
+        echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> default.tfrc
+        echo "}" >> default.tfrc
     - 
       name: Terraform Plan
       uses: labrats-work/action-terraform@main
@@ -47,6 +47,8 @@ jobs:
         varsFile: default.tfvars
         planFile: tfplan
         sshKey: ${{ secrets.SSH_PRIVATE_KEY }}
+      env:
+        TF_CLI_CONFIG_FILE: default.tfrc
     - 
       name: Terraform Apply
       uses: labrats-work/action-terraform@main
@@ -55,6 +57,8 @@ jobs:
         init: yes
         planFile: tfplan
         sshKey: ${{ secrets.SSH_PRIVATE_KEY }}
+      env:
+        TF_CLI_CONFIG_FILE: default.tfrc
     - 
       name: Mask IPs
       run: xargs -a node_ips -I{} -d'\n' echo ::add-mask::{}
