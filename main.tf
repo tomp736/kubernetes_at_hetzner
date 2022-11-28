@@ -9,6 +9,36 @@ module "network" {
   ]
 }
 
+module "cloud-init" {
+  for_each = { for node in local.nodes : node.id => node }
+  source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/cloud-init"
+  general = {
+    hostname                   = each.value.name
+    package_reboot_if_required = true
+    package_update             = true
+    package_upgrade            = true
+    timezone                   = "Europe/Warsaw"
+  }
+
+  users_data = [
+    {
+      name  = "sysadmin"
+      shell = "/bin/bash"
+      ssh-authorized-keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExbodob3iNOPTRsZms/Gjp8PTWnU5fqc1TJEKpTLXIA u0@s01",
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILDxJpolhuDKTr4KpXnq5gPTKYUnoKyAnpIR4k5m3XCH u0@prt-dev-01",
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICwIzhRR2PLaScPBSBS2cfN9dthkdiB5ZvhkFNMpT+6G u0@prt-dev-01",
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDgBAq+CCGT/of2ROoB1+1NiYqrWSSKrptvD7D7NIYM8 gitlab@gitlab.labrats.work"
+      ]
+    }
+  ]
+
+  runcmd = [
+    "mkdir -p /etc/ssh/sshd_config.d",
+    "echo \"Port 2222\" > /etc/ssh/sshd_config.d/90-defaults.conf"
+  ]
+}
+
 module "nodes" {
   for_each = { for node in local.nodes : node.id => node }
 

@@ -1,0 +1,45 @@
+{
+    "nodes": [
+        {
+            "hetzner": {
+                "name": "c0m0",
+                "location": "nbg1",
+                "image": "ubuntu-22.04",
+                "server_type": "cx21",
+                "nodetype": "worker",
+                "network_zone": "eu-central",
+                "ssh_user": "sysadmin",
+                "ssh_port": "2222"
+            }
+        },
+        {
+            "hetzner": {
+                "name": "c0w0",
+                "location": "nbg1",
+                "image": "ubuntu-22.04",
+                "server_type": "cx21",
+                "nodetype": "worker",
+                "network_zone": "eu-central",
+                "ssh_user": "sysadmin",
+                "ssh_port": "2222"
+            }
+        }
+    ]
+}
+// ,
+// "cloud_init": {
+//     "ssh_port": "2222",
+//     "users": [
+//         {
+//             "username": "sysadmin",
+//             "public_keys": [
+//                 "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExbodob3iNOPTRsZms/Gjp8PTWnU5fqc1TJEKpTLXIA u0@s01",
+//                 "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILDxJpolhuDKTr4KpXnq5gPTKYUnoKyAnpIR4k5m3XCH u0@prt-dev-01",
+//                 "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICwIzhRR2PLaScPBSBS2cfN9dthkdiB5ZvhkFNMpT+6G u0@prt-dev-01",
+//                 "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDgBAq+CCGT/of2ROoB1+1NiYqrWSSKrptvD7D7NIYM8 gitlab@gitlab.labrats.work"
+//             ],
+//             "sudo": "ALL=(ALL) NOPASSWD:ALL",
+//             "groups": "sudo"
+//         }
+//     ]
+// }
