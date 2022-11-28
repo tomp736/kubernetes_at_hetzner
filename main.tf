@@ -55,7 +55,7 @@ resource "hcloud_server_network" "kubernetes_subnet" {
 resource "local_file" "hetzner_hostsfile" {  
   content  = <<-EOT
 %{for node in local.config.nodes~}
-${hcloud_server_network.kubernetes_subnet[node.id].ip} ${hetzner_nodes[node.id].name}
+${hcloud_server_network.kubernetes_subnet[node.id].ip} ${module.hetzner_nodes[node.id].name}
 %{~endfor~} 
   EOT
   filename = "hosts"
