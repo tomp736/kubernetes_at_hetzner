@@ -19,7 +19,6 @@ module "cloud-init" {
     package_upgrade            = true
     timezone                   = "Europe/Warsaw"
   }
-
   users_data = [
     {
       name  = "sysadmin"
@@ -32,7 +31,6 @@ module "cloud-init" {
       ]
     }
   ]
-
   runcmd = [
     "mkdir -p /etc/ssh/sshd_config.d",
     "echo \"Port 2222\" > /etc/ssh/sshd_config.d/90-defaults.conf"
