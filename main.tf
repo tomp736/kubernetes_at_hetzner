@@ -52,14 +52,7 @@ resource "hcloud_server_network" "kubernetes_subnet" {
   subnet_id = module.network.hetzner_subnets["10.98.0.0/24"].id
 }
 
-resource "local_file" "hetzner_hostsfile" {
-  for_each = { for node in local.config.nodes : node.id => node if node.hetzner != null }
-  conn {
-    host  = module.hetzner_nodes[each.key].ipv4_address
-    port  = 2222
-    user  = "sysadmin"
-    agent = true
-  }
+resource "local_file" "hetzner_hostsfile" {  
   content  = <<-EOT
 %{for node in module.hetzner_nodes~}
 ${hcloud_server_network.kubernetes_subnet[each.key].ip} ${node.name}
