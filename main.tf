@@ -37,8 +37,8 @@ module "cloud-init" {
   ]
 }
 
-module "nodes" {
-  for_each = { for node in local.config.nodes : node.id => node }
+module "hetzner_nodes" {
+  for_each = { for node in local.config.nodes : node.id => node if node.hetzner }
 
   source               = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node"
   node_config_json     = jsonencode(each.value)
@@ -48,24 +48,24 @@ module "nodes" {
 resource "hcloud_server_network" "kubernetes_subnet" {
   for_each = { for node in local.config.nodes : node.id => node }
 
-  server_id = module.nodes[each.key].id
+  server_id = module.hetzner_nodes[each.key].id
   subnet_id = module.network.hetzner_subnets["10.98.0.0/24"].id
 }
 
 resource "local_file" "ansible_inventory" {
   content  = <<-EOT
 [master]
-%{for node in module.nodes~}
+%{for node in module.hetzner_nodes~}
 %{if node.nodetype == "master"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor~}
 
 [worker]
-%{for node in module.nodes~}
+%{for node in module.hetzner_nodes~}
 %{if node.nodetype == "worker"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor~}
 
 [proxy]
-%{for node in module.nodes~}
+%{for node in module.hetzner_nodes~}
 %{if node.nodetype == "proxy"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor~}
   EOT
@@ -74,7 +74,7 @@ resource "local_file" "ansible_inventory" {
 
 resource "local_file" "node_ips" {
   content  = <<-EOT
-%{for node in module.nodes~}
+%{for node in module.hetzner_nodes~}
 ${node.ipv4_address}
 %{~endfor~}
   EOT
