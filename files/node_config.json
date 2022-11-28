@@ -7,7 +7,7 @@
                 "location": "nbg1",
                 "image": "ubuntu-22.04",
                 "server_type": "cx21",
-                "nodetype": "worker",
+                "nodetype": "master",
                 "network_zone": "eu-central",
                 "ssh_user": "sysadmin",
                 "ssh_port": "2222"
