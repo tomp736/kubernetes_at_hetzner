@@ -73,9 +73,9 @@ resource "local_file" "ansible_inventory" {
 %{if node.nodetype == "worker"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor~}
 
-[proxy]
+[haproxy]
 %{for node in module.hetzner_nodes~}
-%{if node.nodetype == "proxy"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
+%{if node.nodetype == "haproxy"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor~}
   EOT
   filename = "ansible/inventory"
