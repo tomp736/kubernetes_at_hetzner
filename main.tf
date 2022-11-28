@@ -10,7 +10,7 @@ module "network" {
 }
 
 module "cloud-init" {
-  for_each = { for node in local.nodes : node.id => node }
+  for_each = { for node in local.config.nodes : node.id => node }
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/cloud-init"
   general = {
     hostname                   = each.value.hetzner.name
@@ -38,7 +38,7 @@ module "cloud-init" {
 }
 
 module "nodes" {
-  for_each = { for node in local.nodes : node.id => node }
+  for_each = { for node in local.config.nodes : node.id => node }
 
   source               = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node"
   node_config_json     = jsonencode(each.value)
