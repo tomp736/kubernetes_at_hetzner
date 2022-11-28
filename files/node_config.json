@@ -25,6 +25,19 @@
                 "ssh_user": "sysadmin",
                 "ssh_port": "2222"
             }
+        },
+        {
+            "id": "c0p0",
+            "hetzner": {
+                "name": "c0p0",
+                "location": "nbg1",
+                "image": "ubuntu-22.04",
+                "server_type": "cx21",
+                "nodetype": "proxy",
+                "network_zone": "eu-central",
+                "ssh_user": "sysadmin",
+                "ssh_port": "2222"
+            }
         }
     ]
 }

@@ -52,6 +52,22 @@ resource "hcloud_server_network" "kubernetes_subnet" {
   subnet_id = module.network.hetzner_subnets["10.98.0.0/24"].id
 }
 
+resource "local_file" "hetzner_hostsfile" {
+  for_each = { for node in local.config.nodes : node.id => node if node.hetzner != null }
+  conn {
+    host  = module.hetzner_nodes[each.key].ipv4_address
+    port  = 2222
+    user  = "sysadmin"
+    agent = true
+  }
+  content  = <<-EOT
+%{for node in module.hetzner_nodes~}
+${hcloud_server_network[each.key].ip} ${node.name}
+%{~endfor~} 
+  EOT
+  filename = "hosts"
+}
+
 resource "local_file" "ansible_inventory" {
   content  = <<-EOT
 [master]
@@ -70,13 +86,4 @@ resource "local_file" "ansible_inventory" {
 %{~endfor~}
   EOT
   filename = "ansible/inventory"
-}
-
-resource "local_file" "node_ips" {
-  content  = <<-EOT
-%{for node in module.hetzner_nodes~}
-${node.ipv4_address}
-%{~endfor~}
-  EOT
-  filename = "node_ips"
 }
