@@ -38,7 +38,7 @@ module "cloud-init" {
 }
 
 module "hetzner_nodes" {
-  for_each = { for node in local.config.nodes : node.id => node if node.hetzner }
+  for_each = { for node in local.config.nodes : node.id => node if contains(node, "hetzner") }
 
   source               = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node"
   node_config_json     = jsonencode(each.value)
