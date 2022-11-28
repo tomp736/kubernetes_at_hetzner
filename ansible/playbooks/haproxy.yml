@@ -1,5 +1,5 @@
 - name: Configure Worker
-  hosts: worker
+  hosts: haproxy
   remote_user: sysadmin
   become: yes
 
