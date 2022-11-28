@@ -36,11 +36,11 @@ jobs:
         echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> default.tfrc
         echo "}" >> default.tfrc
     - 
-      name: Terraform Plan
+      name: Terraform Destroy
       uses: labrats-work/action-terraform@main
       with:
         verb: destroy
         init: yes
         varsFile: default.tfvars
       env:
-        TF_TOKEN: ${{ secrets.TFCLOUD_TOKEN }}
+        TF_CLI_CONFIG_FILE: default.tfrc
