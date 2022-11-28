@@ -1,5 +1,5 @@
 - name: Configure Nodes
-  hosts: all
+  hosts: master:worker
   remote_user: sysadmin
   become: yes
 
