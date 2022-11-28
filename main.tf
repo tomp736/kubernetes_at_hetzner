@@ -46,7 +46,7 @@ module "nodes" {
 }
 
 resource "hcloud_server_network" "kubernetes_subnet" {
-  for_each = { for node in local.nodes : node.id => node }
+  for_each = { for node in local.config.nodes : node.id => node }
 
   server_id = module.nodes[each.key].id
   subnet_id = module.network.hetzner_subnets["10.98.0.0/24"].id
