@@ -13,7 +13,7 @@ module "cloud-init" {
   for_each = { for node in local.nodes : node.id => node }
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/cloud-init"
   general = {
-    hostname                   = each.value.name
+    hostname                   = each.value.hetzner.name
     package_reboot_if_required = true
     package_update             = true
     package_upgrade            = true
@@ -42,8 +42,9 @@ module "cloud-init" {
 module "nodes" {
   for_each = { for node in local.nodes : node.id => node }
 
-  source          = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node"
-  config_filepath = each.value.config_filepath
+  source               = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node"
+  node_config_json     = jsonencode(each.value)
+  cloud_init_user_data = module.cloud-init[each.key].user_data
 }
 
 resource "hcloud_server_network" "kubernetes_subnet" {
