@@ -5,3 +5,4 @@
 - import_playbook: playbooks/node.yml
 - import_playbook: playbooks/master.yml
 - import_playbook: playbooks/worker.yml
+- import_playbook: playbooks/haproxy.yml
