@@ -1,9 +1,9 @@
 {
     "nodes": [
         {
-            "id": "c0m0",
+            "id": "{prefix}m0",
             "hetzner": {
-                "name": "c0m0",
+                "name": "{prefix}m0",
                 "location": "nbg1",
                 "image": "ubuntu-22.04",
                 "server_type": "cx21",
@@ -14,9 +14,9 @@
             }
         },
         {
-            "id": "c0w0",
+            "id": "{prefix}w0",
             "hetzner": {
-                "name": "c0w0",
+                "name": "{prefix}w0",
                 "location": "nbg1",
                 "image": "ubuntu-22.04",
                 "server_type": "cx21",
@@ -27,9 +27,9 @@
             }
         },
         {
-            "id": "c0p0",
+            "id": "{prefix}p0",
             "hetzner": {
-                "name": "c0p0",
+                "name": "{prefix}p0",
                 "location": "nbg1",
                 "image": "ubuntu-22.04",
                 "server_type": "cx21",
@@ -40,9 +40,9 @@
             }
         },
         {
-            "id": "c0b0",
+            "id": "{prefix}b0",
             "hetzner": {
-                "name": "c0b0",
+                "name": "{prefix}b0",
                 "location": "nbg1",
                 "image": "ubuntu-22.04",
                 "server_type": "cx11",

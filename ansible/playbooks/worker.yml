@@ -5,9 +5,9 @@
 
   collections:
   - labrats_work.modules_ansible
-
+  
   tasks:  
   - ansible.builtin.import_role:
       name: labrats_work.modules_ansible.kubernetes_worker
     vars:
-      master_node: 'c0m0'
+      master_node: "{{ hostvars[groups['master'][0]]['ansible_hostname'] }}"

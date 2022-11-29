@@ -1,8 +1,9 @@
 # ./main.tf
 
 module "network" {
-  source = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/network"
+  source = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/network?ref=main"
 
+  network_name     = "net"
   network_ip_range = "10.98.0.0/16"
   network_subnet_ranges = [
     "10.98.0.0/24"
@@ -11,7 +12,7 @@ module "network" {
 
 module "cloud-init" {
   for_each = { for node in local.config.nodes : node.id => node }
-  source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/cloud-init"
+  source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/cloud-init?ref=main"
   general = {
     hostname                   = each.value.hetzner.name
     package_reboot_if_required = true
@@ -24,10 +25,8 @@ module "cloud-init" {
       name  = "sysadmin"
       shell = "/bin/bash"
       ssh-authorized-keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExbodob3iNOPTRsZms/Gjp8PTWnU5fqc1TJEKpTLXIA u0@s01",
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILDxJpolhuDKTr4KpXnq5gPTKYUnoKyAnpIR4k5m3XCH u0@prt-dev-01",
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICwIzhRR2PLaScPBSBS2cfN9dthkdiB5ZvhkFNMpT+6G u0@prt-dev-01",
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDgBAq+CCGT/of2ROoB1+1NiYqrWSSKrptvD7D7NIYM8 gitlab@gitlab.labrats.work"
+        var.public_key,
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILDxJpolhuDKTr4KpXnq5gPTKYUnoKyAnpIR4k5m3XCH u0@prt-dev-01"
       ]
     }
   ]
@@ -40,8 +39,8 @@ module "cloud-init" {
 module "hetzner_nodes" {
   for_each = { for node in local.config.nodes : node.id => node if node.hetzner != null }
 
-  source               = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node"
-  node_config_json     = jsonencode(each.value)
+  source               = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node?ref=main"
+  node_config          = each.value.hetzner
   cloud_init_user_data = module.cloud-init[each.key].user_data
 }
 
@@ -52,7 +51,7 @@ resource "hcloud_server_network" "kubernetes_subnet" {
   subnet_id = module.network.hetzner_subnets["10.98.0.0/24"].id
 }
 
-resource "local_file" "hetzner_hostsfile" {  
+resource "local_file" "hetzner_hostsfile" {
   content  = <<-EOT
 %{for node in local.config.nodes~}
 ${hcloud_server_network.kubernetes_subnet[node.id].ip} ${module.hetzner_nodes[node.id].name}
@@ -76,6 +75,11 @@ resource "local_file" "ansible_inventory" {
 [haproxy]
 %{for node in module.hetzner_nodes~}
 %{if node.nodetype == "haproxy"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
+%{~endfor~}
+
+[bastion]
+%{for node in module.hetzner_nodes~}
+%{if node.nodetype == "bastion"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor~}
   EOT
   filename = "ansible/inventory"
