@@ -10,4 +10,4 @@
   - ansible.builtin.import_role:
       name: labrats_work.modules_ansible.kubernetes_worker
     vars:
-      master_node: 'c0m0'
+      master_node: "{{ groups['master'][0].ansible_hostname }}"
