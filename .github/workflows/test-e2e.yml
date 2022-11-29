@@ -1,0 +1,106 @@
+name: 'Terraform Test E2E'
+
+on:
+  push:
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: 'Test E2E'
+    runs-on: ubuntu-latest
+    steps:
+    - 
+      name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ env.BRANCH_NAME }}
+    - 
+      name: Create keypair for test.
+      run: |
+        ssh-keygen -t ed25519 -N '' -f id_ed25519
+        xargs -a id_ed25519 -I{} -d'\n' echo ::add-mask::{}
+        xargs -a id_ed25519.pub -I{} -d'\n' echo ::add-mask::{}
+    - 
+      name: Load keypair for test.
+      run: |
+        echo "Loading KEYFILE \"id_ed25519\" into GITHUB_ENV."
+        echo 'KEYFILE<<EOF' >> $GITHUB_ENV
+        cat id_ed25519 >> $GITHUB_ENV
+        echo EOF >> $GITHUB_ENV
+
+        echo "Loading PUBKEYFILE \"id_ed25519.pub\" into GITHUB_ENV."
+        echo 'PUBKEYFILE<<EOF' >> $GITHUB_ENV
+        cat id_ed25519.pub >> $GITHUB_ENV
+        echo EOF >> $GITHUB_ENV
+    - 
+      name: Create default.tfvars file
+      run: |
+        echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
+        echo "public_key = \"${{ env.PUBKEYFILE }}\"" >> default.tfvars
+    - 
+      name: Create default.tfrc file
+      run: |
+        echo "# default.tfrc" > default.tfrc
+        echo "credentials \"app.terraform.io\" {" >> default.tfrc
+        echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> default.tfrc
+        echo "}" >> default.tfrc
+    - 
+      if: github.ref != 'refs/heads/main'
+      name: Update git ref to match build branch name.
+      run: |
+        sed -i 's|?ref=main|?ref=${{ env.BRANCH_NAME }}|g' main.tf
+    - 
+      name: Update prefix for node names.
+      run: |
+        sed -i 's|{prefix}|${{ env.BRANCH_NAME }}|g' files/node_config.tf
+    - 
+      name: Terraform Plan
+      uses: labrats-work/action-terraform@main
+      with:
+        verb: plan
+        init: yes
+        varsFile: default.tfvars
+        planFile: tfplan
+        sshKey: ${{ env.KEYFILE }}
+      env:
+        TF_CLI_CONFIG_FILE: default.tfrc
+    - 
+      if: github.ref == 'refs/heads/main'
+      name: Terraform Apply
+      uses: labrats-work/action-terraform@main
+      with:
+        verb: apply
+        init: yes
+        planFile: tfplan
+        sshKey: ${{ env.KEYFILE }}
+      env:
+        TF_CLI_CONFIG_FILE: default.tfrc
+    - 
+      if: github.ref == 'refs/heads/main'
+      name: Run playbook
+      uses: labrats-work/action-ansible@main
+      with:
+        workingDirectory: ./ansible
+        sshKey: ${{ env.KEYFILE }}
+    - 
+      name: Sleep
+      run: |
+        echo "Will destroy node in 1 minute."
+        sleep 1m
+    - 
+      if: always()
+      name: Terraform Destroy
+      uses: labrats-work/action-terraform@main
+      with:
+        verb: destroy
+        init: yes
+        varsFile: default.tfvars
+        sshKey: ${{ env.KEYFILE }}
+      env:
+        TF_CLI_CONFIG_FILE: default.tfrc
+    
