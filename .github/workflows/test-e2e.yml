@@ -49,7 +49,14 @@ jobs:
         echo "credentials \"app.terraform.io\" {" >> default.tfrc
         echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> default.tfrc
         echo "}" >> default.tfrc
-    - 
+    -
+      name: Create config.remote.tfbackend
+      run: | 
+        echo "# config.remote.tfbackend" > config.remote.tfbackend
+        echo "workspaces { name = \"kubernetes_at_hetzner_${{ env.BRANCH_NAME }}\" }" >> config.remote.tfbackend
+        echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
+        echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
+    -
       if: github.ref != 'refs/heads/main'
       name: Update git ref to match build branch name.
       run: |
@@ -66,22 +73,22 @@ jobs:
         init: yes
         varsFile: default.tfvars
         planFile: tfplan
+        backendConfigFile: config.remote.tfbackend
         sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: github.ref == 'refs/heads/main'
       name: Terraform Apply
       uses: labrats-work/action-terraform@main
       with:
         verb: apply
         init: yes
         planFile: tfplan
+        backendConfigFile: config.remote.tfbackend
         sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: github.ref == 'refs/heads/main'
       name: Run playbook
       uses: labrats-work/action-ansible@main
       with:
@@ -100,6 +107,7 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
+        backendConfigFile: config.remote.tfbackend
         sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
