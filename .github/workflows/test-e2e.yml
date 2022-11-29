@@ -1,6 +1,7 @@
 name: 'Terraform Test E2E'
 
 on:
+  workflow_dispatch:
   push:
 
 env:
