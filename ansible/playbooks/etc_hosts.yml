@@ -4,7 +4,8 @@
   become: yes
 
   tasks:  
-  - name: Add Private IP address of all hosts to all hosts
+
+  - name: Add Private IP address of all hosts to hosts.debian.tmpl
     lineinfile:
       dest: /etc/cloud/templates/hosts.debian.tmpl
       line: "{{ hostvars[item]['ansible_ens10']['ipv4']['address'] }} {{ hostvars[item].ansible_hostname }} "
@@ -12,8 +13,7 @@
     when: hostvars[item]['ansible_ens10'] is defined
     with_items: "{{ groups.all }}"
 
-  tasks:  
-  - name: Add Private IP address of all hosts to all hosts
+  - name: Add Private IP address of all hosts to /etc/hosts
     lineinfile:
       dest: /etc/hosts
       line: "{{ hostvars[item]['ansible_ens10']['ipv4']['address'] }} {{ hostvars[item].ansible_hostname }} "
