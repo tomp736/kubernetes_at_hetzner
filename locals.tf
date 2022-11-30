@@ -1,3 +1,3 @@
 locals {
-  config = jsondecode(file("files/node_config.json"))
+  config = jsondecode(file("files/config.json"))
 }

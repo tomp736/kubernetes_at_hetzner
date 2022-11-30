@@ -66,7 +66,7 @@ jobs:
     - 
       name: Update prefix for node names.
       run: |
-        sed -i 's|{prefix}|${{ env.DEPS_REF }}|g' files/node_config.json
+        sed -i 's|{prefix}|${{ env.BRANCH_NAME }}|g' files/node_config.json
     - 
       name: Terraform Plan
       uses: labrats-work/action-terraform@main
