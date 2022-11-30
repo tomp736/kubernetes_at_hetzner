@@ -1,7 +1,7 @@
 # providers.tf
 
 terraform {
-  backend "remote" {}
+  backend "local" {}
   required_providers {
     hcloud = {
       source = "hetznercloud/hcloud"

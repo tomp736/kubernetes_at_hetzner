@@ -74,11 +74,10 @@ jobs:
         echo "workspaces { name = \"kubernetes_at_hetzner_${{ env.TF_WORKSPACE }}\" }" >> config.remote.tfbackend
         echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
         echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
-    # -
-    #   if: github.ref != 'refs/heads/main'
-    #   name: Update git ref to match build branch name.
-    #   run: |
-    #     sed -i 's|?ref=main|?ref=${{ env.REF_NAME }}|g' main.tf
+    -
+      name: Update provider to use remote for this run.
+      run: |
+        sed -i 's|local|remote|g' providers.tf
     - 
       name: Update prefix for node names.
       run: |

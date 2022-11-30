@@ -47,20 +47,6 @@ jobs:
       run: |
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
         echo "public_key = \"${{ env.PUBKEYFILE }}\"" >> default.tfvars
-    - 
-      name: Create default.tfrc file
-      run: |
-        echo "# default.tfrc" > default.tfrc
-        echo "credentials \"app.terraform.io\" {" >> default.tfrc
-        echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> default.tfrc
-        echo "}" >> default.tfrc
-    -
-      name: Create config.remote.tfbackend
-      run: | 
-        echo "# config.remote.tfbackend" > config.remote.tfbackend
-        echo "workspaces { name = \"kubernetes_at_hetzner_${{ env.BRANCH_NAME }}\" }" >> config.remote.tfbackend
-        echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
-        echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
     -
       if: github.ref != 'refs/heads/main'
       name: Update git ref to match build branch name.
@@ -78,7 +64,6 @@ jobs:
         init: yes
         varsFile: default.tfvars
         planFile: tfplan
-        backendConfigFile: config.remote.tfbackend
         sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
@@ -89,7 +74,6 @@ jobs:
         verb: apply
         init: yes
         planFile: tfplan
-        backendConfigFile: config.remote.tfbackend
         sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
@@ -119,7 +103,6 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
-        backendConfigFile: config.remote.tfbackend
         sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
