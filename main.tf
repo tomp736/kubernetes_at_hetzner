@@ -1,6 +1,6 @@
 # ./main.tf
 
-module "network" {
+module "hetzner_network" {
   for_each = { for network in local.config.networks : network.id => network if network.hetzner != null }
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/network?ref=main"
 
@@ -47,7 +47,7 @@ resource "hcloud_server_network" "kubernetes_subnet" {
   for_each = { for node in local.config.nodes : node.id => node }
 
   server_id = module.hetzner_nodes[each.key].id
-  subnet_id = module.network.hetzner_subnets["10.98.0.0/24"].id
+  subnet_id = module.hetzner_network[0].hetzner_subnets["10.98.0.0/24"].id
 }
 
 resource "local_file" "hetzner_hostsfile" {
