@@ -1,4 +1,4 @@
-name: 'Deploy'
+name: 'Deploy Workspace'
 
 on:
   workflow_dispatch:
@@ -18,8 +18,6 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  TF_WORKSPACE: ${{ github.event.inputs.workspace || github.head_ref || github.ref_name }}
-  TF_LIFETIME: ${{ github.event.inputs.lifetime || github.head_ref || github.ref_name }}
 
 permissions:
   contents: read
@@ -61,22 +59,21 @@ jobs:
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
         echo "public_key = \"${{ env.PUBKEYFILE }}\"" >> default.tfvars
     - 
-      name: Create default.tfrc file
+      name: Apply changes for remote backend
       run: |
+        echo "Create default.tfrc file"
         echo "# default.tfrc" > default.tfrc
         echo "credentials \"app.terraform.io\" {" >> default.tfrc
         echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> default.tfrc
         echo "}" >> default.tfrc
-    -
-      name: Create config.remote.tfbackend
-      run: | 
+
+        echo "Create config.remote.tfbackend"
         echo "# config.remote.tfbackend" > config.remote.tfbackend
-        echo "workspaces { name = \"kubernetes_at_hetzner_${{ env.TF_WORKSPACE }}\" }" >> config.remote.tfbackend
+        echo "workspaces { name = \"kubernetes_at_hetzner_${{ github.event.inputs.workspace }}\" }" >> config.remote.tfbackend
         echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
         echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
-    -
-      name: Update provider to use remote for this run.
-      run: |
+
+        echo "Create config.remote.tfbackend"
         sed -i 's|local|remote|g' providers.tf
     - 
       name: Update prefix for node names.
@@ -121,8 +118,8 @@ jobs:
     - 
       name: Cluster Timeout
       run: |
-        echo "Will destroy cluster in ${{ env.TF_LIFETIME }}."
-        sleep ${{ env.TF_LIFETIME }}
+        echo "Will destroy cluster in ${{ github.event.inputs.lifetime }}."
+        sleep ${{ github.event.inputs.lifetime }}
     - 
       if: always()
       name: Terraform Destroy
