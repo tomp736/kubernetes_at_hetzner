@@ -105,21 +105,22 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
+      name: Cache Ansible Collections
+      uses: actions/cache@v3
+      with:
+        key: ansible-${{ env.BRANCH_NAME }}
+        path: |
+          ~/.ansible/collections
+    - 
       name: Run playbook
       uses: labrats-work/action-ansible@main
       with:
         workingDirectory: ./ansible
         sshKey: ${{ env.KEYFILE }}
     - 
-      name: Cache Ansbile Collections
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.ansible/collections
-    - 
       name: Cluster Timeout
       run: |
-        echo "Will destroy cluster in ${{ env.TF_LIFETIME }}."."
+        echo "Will destroy cluster in ${{ env.TF_LIFETIME }}."
         sleep ${{ env.TF_LIFETIME }}
     - 
       if: always()
