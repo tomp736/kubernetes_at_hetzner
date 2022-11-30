@@ -104,9 +104,9 @@ jobs:
         workingDirectory: ./ansible
         sshKey: ${{ env.KEYFILE }}
     - 
-      name: Sleep
+      name: Cluster Timeout
       run: |
-        echo "Will destroy node in 1 minute."
+        echo "Will destroy cluster in 1m."
         sleep 1m
     - 
       if: always()
