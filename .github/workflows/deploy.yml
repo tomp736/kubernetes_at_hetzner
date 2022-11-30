@@ -9,13 +9,13 @@ on:
         options: 
         - tomp736
       lifetime:
-        type: string
+        type: choice
         description: Lifetime of cluster (minutes).
         options:
         - 1m
         - 30m
         - 60m
-        
+
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
   TF_WORKSPACE: ${{ github.event.inputs.workspace || github.head_ref || github.ref_name }}
