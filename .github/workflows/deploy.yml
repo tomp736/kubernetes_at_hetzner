@@ -29,6 +29,9 @@ jobs:
   deploy:
     name: 'Test E2E'
     runs-on: ubuntu-latest
+    concurrency: 
+      group: ${{ env.BRANCH_NAME }}
+      cancel-in-progress: false      
     steps:
     - 
       name: Checkout
