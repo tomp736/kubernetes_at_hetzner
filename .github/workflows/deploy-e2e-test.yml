@@ -86,6 +86,7 @@ jobs:
         path: |
           ~/.ansible/collections
     - 
+      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
       name: Run playbook
       uses: labrats-work/action-ansible@main
       with:
