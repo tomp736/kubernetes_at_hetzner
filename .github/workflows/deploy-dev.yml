@@ -111,10 +111,16 @@ jobs:
         workingDirectory: ./ansible
         sshKey: ${{ env.KEYFILE }}
     - 
-      name: Sleep
+      name: Cache Ansbile Collections
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.ansible/collections
+    - 
+      name: Cluster Timeout
       run: |
-        echo "Will destroy node in 1 minute."
-        sleep ${{ env.TF_LIFETIME }}m
+        echo "Will destroy cluster in ${{ env.TF_LIFETIME }}."."
+        sleep ${{ env.TF_LIFETIME }}
     - 
       if: always()
       name: Terraform Destroy

@@ -91,6 +91,13 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
+      name: Cache Ansible Collections
+      uses: actions/cache@v3
+      with:
+        key: ansible-${{ env.BRANCH_NAME }}
+        path: |
+          ~/.ansible/collections
+    - 
       name: Run playbook
       uses: labrats-work/action-ansible@main
       with:
