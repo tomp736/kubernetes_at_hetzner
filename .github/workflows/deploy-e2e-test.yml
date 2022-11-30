@@ -53,7 +53,7 @@ jobs:
       run: |
         sed -i 's|?ref=main|?ref=${{ env.DEPS_REF }}|g' main.tf
     - 
-      name: Update prefix for node names.
+      name: Update prefix for resources.
       run: |
         sed -i 's|{prefix}|${{ env.BRANCH_NAME }}|g' files/config.json
     - 

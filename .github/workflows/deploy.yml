@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   deploy:
-    name: 'Test E2E'
+    name: 'Deploy'
     runs-on: ubuntu-latest
     concurrency: 
       group: ${{ github.head_ref || github.ref_name }}
@@ -76,9 +76,9 @@ jobs:
         echo "Create config.remote.tfbackend"
         sed -i 's|local|remote|g' providers.tf
     - 
-      name: Update prefix for node names.
+      name: Update prefix for resources.
       run: |
-        sed -i 's|{prefix}|${{ env.BRANCH_NAME }}|g' files/node_config.json
+        sed -i 's|{prefix}|${{ env.BRANCH_NAME }}|g' files/config.json
     - 
       name: Terraform Plan
       uses: labrats-work/action-terraform@main
