@@ -18,7 +18,7 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  RESOURCE_PREFIX: "${{ github.event.inputs.workspace }}_workspace_"
+  RESOURCE_PREFIX: "${{ github.event.inputs.workspace }}-workspace-"
 
 permissions:
   contents: read

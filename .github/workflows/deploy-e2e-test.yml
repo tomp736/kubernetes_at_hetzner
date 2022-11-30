@@ -6,7 +6,7 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  RESOURCE_PREFIX: ${{ github.head_ref || github.ref_name }}
+  RESOURCE_PREFIX: "${{ github.head_ref || github.ref_name }}-"
   DEPS_REF: main
 
 permissions:
@@ -79,6 +79,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
+      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
       name: Cache Ansible Collections
       uses: actions/cache@v3
       with:
@@ -86,6 +87,7 @@ jobs:
         path: |
           ~/.ansible/collections
     - 
+      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
       name: Run playbook
       uses: labrats-work/action-ansible@main
       with:
