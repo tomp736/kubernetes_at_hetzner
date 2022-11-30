@@ -1,32 +1,18 @@
-name: 'Deploy Testing Environment'
+name: 'Deploy E2E Test'
 
 on:
   workflow_dispatch:
-    inputs:
-      workspace:
-        type: choice
-        description: Workspace to use
-        options: 
-        - tomp736
-      lifetime:
-        type: string
-        description: Lifetime of cluster (minutes).
-        options:
-        - 1m
-        - 30m
-        - 60m
-
+  push:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  TF_WORKSPACE: ${{ github.event.inputs.workspace || github.head_ref || github.ref_name }}
-  TF_LIFETIME: ${{ github.event.inputs.lifetime || github.head_ref || github.ref_name }}
+  DEPS_REF: main
 
 permissions:
   contents: read
 
 jobs:
-  terraform:
+  deploy:
     name: 'Test E2E'
     runs-on: ubuntu-latest
     steps:
@@ -69,18 +55,18 @@ jobs:
       name: Create config.remote.tfbackend
       run: | 
         echo "# config.remote.tfbackend" > config.remote.tfbackend
-        echo "workspaces { name = \"kubernetes_at_hetzner_${{ env.TF_WORKSPACE }}\" }" >> config.remote.tfbackend
+        echo "workspaces { name = \"kubernetes_at_hetzner_${{ env.BRANCH_NAME }}\" }" >> config.remote.tfbackend
         echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
         echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
-    # -
-    #   if: github.ref != 'refs/heads/main'
-    #   name: Update git ref to match build branch name.
-    #   run: |
-    #     sed -i 's|?ref=main|?ref=${{ env.REF_NAME }}|g' main.tf
+    -
+      if: github.ref != 'refs/heads/main'
+      name: Update git ref to match build branch name.
+      run: |
+        sed -i 's|?ref=main|?ref=${{ env.DEPS_REF }}|g' main.tf
     - 
       name: Update prefix for node names.
       run: |
-        sed -i 's|{prefix}|${{ env.BRANCH_NAME }}|g' files/node_config.json
+        sed -i 's|{prefix}|${{ env.BRANCH_NAME }}|g' files/config.json
     - 
       name: Terraform Plan
       uses: labrats-work/action-terraform@main
@@ -120,8 +106,8 @@ jobs:
     - 
       name: Cluster Timeout
       run: |
-        echo "Will destroy cluster in ${{ env.TF_LIFETIME }}."
-        sleep ${{ env.TF_LIFETIME }}
+        echo "Will destroy cluster in 1m."
+        sleep 1m
     - 
       if: always()
       name: Terraform Destroy
