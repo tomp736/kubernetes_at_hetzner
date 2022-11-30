@@ -6,7 +6,7 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  RESOURCE_PREFIX: "${{ github.head_ref || github.ref_name }}_"
+  RESOURCE_PREFIX: "${{ github.head_ref || github.ref_name }}-"
   DEPS_REF: main
 
 permissions:
