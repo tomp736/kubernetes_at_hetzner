@@ -1,4 +1,16 @@
 {
+    "networks": [
+        {
+            "id": "{prefix}net",
+            "hetzner": {
+                "name": "{prefix}net",
+                "ip_range": "10.98.0.0/16",
+                "subnet_ranges": [
+                    "10.98.0.0/24"
+                ]
+            }
+        }
+    ],
     "nodes": [
         {
             "id": "{prefix}m0",

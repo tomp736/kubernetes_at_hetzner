@@ -6,6 +6,7 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+  DEPS_REF: main
 
 permissions:
   contents: read
@@ -61,11 +62,11 @@ jobs:
       if: github.ref != 'refs/heads/main'
       name: Update git ref to match build branch name.
       run: |
-        sed -i 's|?ref=main|?ref=${{ env.BRANCH_NAME }}|g' main.tf
+        sed -i 's|?ref=main|?ref=${{ env.DEPS_REF }}|g' main.tf
     - 
       name: Update prefix for node names.
       run: |
-        sed -i 's|{prefix}|${{ env.BRANCH_NAME }}|g' files/node_config.json
+        sed -i 's|{prefix}|${{ env.BRANCH_NAME }}|g' files/config.json
     - 
       name: Terraform Plan
       uses: labrats-work/action-terraform@main
