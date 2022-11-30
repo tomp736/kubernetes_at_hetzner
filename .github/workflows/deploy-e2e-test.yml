@@ -79,6 +79,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
+      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
       name: Cache Ansible Collections
       uses: actions/cache@v3
       with:
