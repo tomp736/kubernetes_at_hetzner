@@ -18,6 +18,7 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+  RESOURCE_PREFIX: "${{ github.event.inputs.workspace }}_workspace_"
 
 permissions:
   contents: read
@@ -78,7 +79,7 @@ jobs:
     - 
       name: Update prefix for resources.
       run: |
-        sed -i 's|{prefix}|${{ env.BRANCH_NAME }}|g' files/config.json
+        sed -i 's|{prefix}|${{ env.RESOURCE_PREFIX }}|g' files/config.json
     - 
       name: Terraform Plan
       uses: labrats-work/action-terraform@main
