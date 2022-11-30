@@ -1,17 +1,16 @@
 # ./main.tf
 
-module "network" {
-  source = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/network?ref=main"
+module "hetzner_network" {
+  for_each = { for network in local.config.networks : network.id => network if network.hetzner != null }
+  source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/network?ref=main"
 
-  network_name     = "net"
-  network_ip_range = "10.98.0.0/16"
-  network_subnet_ranges = [
-    "10.98.0.0/24"
-  ]
+  network_name          = each.value.hetzner.name
+  network_ip_range      = each.value.hetzner.ip_range
+  network_subnet_ranges = each.value.hetzner.subnet_ranges
 }
 
 module "cloud-init" {
-  for_each = { for node in local.config.nodes : node.id => node }
+  for_each = { for node in local.config.nodes : node.id => node if node.hetzner != null }
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/cloud-init?ref=main"
   general = {
     hostname                   = each.value.hetzner.name
@@ -48,7 +47,7 @@ resource "hcloud_server_network" "kubernetes_subnet" {
   for_each = { for node in local.config.nodes : node.id => node }
 
   server_id = module.hetzner_nodes[each.key].id
-  subnet_id = module.network.hetzner_subnets["10.98.0.0/24"].id
+  subnet_id = values(module.hetzner_network)[0].hetzner_subnets["10.98.0.0/24"].id
 }
 
 resource "local_file" "hetzner_hostsfile" {

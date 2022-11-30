@@ -1,22 +1,14 @@
-# awesome_kubernetes
+# Kubernetes@Hetzner
 
-## Awesome repository for kubernetes cluster
+[![Terraform Test E2E](https://github.com/tomp736/kubernetes_at_hetzner/actions/workflows/test-e2e.yml/badge.svg)](https://github.com/tomp736/kubernetes_at_hetzner/actions/workflows/test-e2e.yml)
 
-Provisioned on hetzner cloud using ansible and terraform
-
-Requirements:
-
-- terraform
-- ansible
-- hcloud_token
-
-Uses local backend unless otherwise specified in terraform.
+Kubernetes cluster provisioned on hetzner cloud using ansible and terraform.
 
 ---
 
 ## Usage
 
-### Terraform will provision servers and create an inventory file
+### Terraform creates hetzners resources and generates an inventory for ansible.
 
 ``` default.tfvars
 # default.tfvars 
@@ -29,7 +21,7 @@ hcloud_token = "{{ hcloud_token }}"
 terraform apply --var-file=secrets/main.tfvar
 ```
 
-### Ansible will configure kubernetes nodes using generated inventory file
+### Ansible configures kubernetes using generated inventory.
 
 ```bash
 # apply-ansible,sh
