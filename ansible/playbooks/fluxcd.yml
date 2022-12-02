@@ -1,0 +1,11 @@
+- name: Configure Worker
+  hosts: master
+  remote_user: sysadmin
+  become: yes
+
+  collections:
+  - labrats_work.modules_ansible
+  
+  tasks:  
+  - ansible.builtin.import_role:
+      name: labrats_work.modules_ansible.fluxcd
