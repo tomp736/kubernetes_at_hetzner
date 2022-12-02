@@ -8,6 +8,12 @@ on:
         description: Workspace to use
         options: 
         - tomp736
+      depsref:
+        type: choice
+        description: Repo deps ref
+        options: 
+        - main
+        - dev
       lifetime:
         type: choice
         description: Lifetime of cluster (minutes).
@@ -19,6 +25,7 @@ on:
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
   RESOURCE_PREFIX: "${{ github.event.inputs.workspace }}-workspace-"
+  DEPS_REF: main
 
 permissions:
   contents: read
@@ -28,7 +35,7 @@ jobs:
     name: 'Deploy'
     runs-on: ubuntu-latest
     concurrency: 
-      group: ${{ github.head_ref || github.ref_name }}
+      group: "${{ github.event.inputs.workspace }}-workspace-"
       cancel-in-progress: false      
     steps:
     - 

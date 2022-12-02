@@ -7,7 +7,6 @@ on:
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
   RESOURCE_PREFIX: "${{ github.head_ref || github.ref_name }}-"
-  DEPS_REF: main
 
 permissions:
   contents: read
@@ -49,10 +48,10 @@ jobs:
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
         echo "public_key = \"${{ env.PUBKEYFILE }}\"" >> default.tfvars
     -
-      if: github.ref != 'refs/heads/main'
-      name: Update git ref to match build branch name.
+      if: github.ref == 'refs/heads/main'
+      name: Update terraform refs to dev for all branches but main.
       run: |
-        sed -i 's|?ref=main|?ref=${{ env.DEPS_REF }}|g' main.tf
+        sed -i 's|?ref=main|?ref=dev|g' main.tf
     - 
       name: Update prefix for resources.
       run: |
