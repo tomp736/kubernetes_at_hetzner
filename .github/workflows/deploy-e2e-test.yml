@@ -103,6 +103,7 @@ jobs:
         sleep 1m
     - 
       if: always()
+      id: destroy
       continue-on-error: true
       name: Terraform Destroy
       uses: labrats-work/action-terraform@main
