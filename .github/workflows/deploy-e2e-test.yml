@@ -3,6 +3,9 @@ name: 'Deploy E2E Test'
 on:
   workflow_dispatch:
   push:
+    paths:
+      - '!.github/workflows/deploy.yml'
+      - '!**/README.md'
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
