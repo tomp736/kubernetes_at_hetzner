@@ -8,6 +8,12 @@ on:
         description: Workspace to use
         options: 
         - tomp736
+      depsref:
+        type: choice
+        description: Repo deps ref
+        options: 
+        - main
+        - dev
       lifetime:
         type: choice
         description: Lifetime of cluster (minutes).
@@ -28,7 +34,7 @@ jobs:
     name: 'Deploy'
     runs-on: ubuntu-latest
     concurrency: 
-      group: ${{ github.head_ref || github.ref_name }}
+      group: "${{ github.event.inputs.workspace }}-workspace-"
       cancel-in-progress: false      
     steps:
     - 
@@ -89,7 +95,6 @@ jobs:
         varsFile: default.tfvars
         planFile: tfplan
         backendConfigFile: config.remote.tfbackend
-        sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
@@ -100,7 +105,6 @@ jobs:
         init: yes
         planFile: tfplan
         backendConfigFile: config.remote.tfbackend
-        sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
@@ -115,7 +119,6 @@ jobs:
       uses: labrats-work/action-ansible@main
       with:
         workingDirectory: ./ansible
-        sshKey: ${{ env.KEYFILE }}
     - 
       name: Cluster Timeout
       run: |
@@ -123,6 +126,7 @@ jobs:
         sleep ${{ github.event.inputs.lifetime }}
     - 
       if: always()
+      continue-on-error: true
       name: Terraform Destroy
       uses: labrats-work/action-terraform@main
       with:
@@ -130,7 +134,32 @@ jobs:
         init: yes
         varsFile: default.tfvars
         backendConfigFile: config.remote.tfbackend
-        sshKey: ${{ env.KEYFILE }}
+      env:
+        TF_CLI_CONFIG_FILE: default.tfrc
+    - 
+      if: always() && steps.destroy.outcome == 'failure'
+      id: destroy2
+      continue-on-error: true
+      name: Terraform Destroy
+      uses: labrats-work/action-terraform@main
+      with:
+        verb: destroy
+        init: yes
+        varsFile: default.tfvars
+        backendConfigFile: config.remote.tfbackend
+      env:
+        TF_CLI_CONFIG_FILE: default.tfrc
+    - 
+      if: always() && steps.destroy2.outcome == 'failure'
+      id: destroy3
+      continue-on-error: true
+      name: Terraform Destroy
+      uses: labrats-work/action-terraform@main
+      with:
+        verb: destroy
+        init: yes
+        varsFile: default.tfvars
+        backendConfigFile: config.remote.tfbackend
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     
