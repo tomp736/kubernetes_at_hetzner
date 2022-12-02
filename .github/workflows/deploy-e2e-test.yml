@@ -64,7 +64,6 @@ jobs:
         init: yes
         varsFile: default.tfvars
         planFile: tfplan
-        sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
@@ -74,7 +73,6 @@ jobs:
         verb: apply
         init: yes
         planFile: tfplan
-        sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
@@ -91,7 +89,6 @@ jobs:
       uses: labrats-work/action-ansible@main
       with:
         workingDirectory: ./ansible
-        sshKey: ${{ env.KEYFILE }}
     - 
       name: Cluster Timeout
       run: |
@@ -106,7 +103,6 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
-        sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
@@ -119,7 +115,6 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
-        sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
@@ -132,7 +127,6 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
-        sshKey: ${{ env.KEYFILE }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     
