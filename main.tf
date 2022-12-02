@@ -1,8 +1,9 @@
 # ./main.tf
 
 module "hetzner_network" {
-  for_each = { for network in local.config.networks : network.id => network if network.hetzner != null }
+  for_each = { for network in local.config.networks : network.id => network if network.hetzner != null }  
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/network?ref=main"
+
 
   network_name          = each.value.hetzner.name
   network_ip_range      = each.value.hetzner.ip_range
@@ -12,6 +13,7 @@ module "hetzner_network" {
 module "cloud-init" {
   for_each = { for node in local.config.nodes : node.id => node if node.hetzner != null }
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/cloud-init?ref=main"
+
   general = {
     hostname                   = each.value.hetzner.name
     package_reboot_if_required = true
@@ -37,8 +39,8 @@ module "cloud-init" {
 
 module "hetzner_nodes" {
   for_each = { for node in local.config.nodes : node.id => node if node.hetzner != null }
-
   source               = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node?ref=main"
+  
   node_config          = each.value.hetzner
   cloud_init_user_data = module.cloud-init[each.key].user_data
 }
