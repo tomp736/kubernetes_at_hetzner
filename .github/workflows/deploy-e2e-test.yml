@@ -48,7 +48,7 @@ jobs:
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
         echo "public_key = \"${{ env.PUBKEYFILE }}\"" >> default.tfvars
     -
-      if: github.ref == 'refs/heads/main'
+      if: github.ref != 'refs/heads/main'
       name: Update terraform refs to dev for all branches but main.
       run: |
         sed -i 's|?ref=main|?ref=dev|g' main.tf

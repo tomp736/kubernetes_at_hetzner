@@ -25,7 +25,6 @@ on:
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
   RESOURCE_PREFIX: "${{ github.event.inputs.workspace }}-workspace-"
-  DEPS_REF: main
 
 permissions:
   contents: read
