@@ -11,6 +11,10 @@ on:
         type: string
         description: Terraform Modules Ref
         required: true
+      ANSIBLE_MODULES_REF:
+        type: string
+        description: Ansible Modules Ref
+        required: true
       FLUX_WORKSPACE:
         type: string
         description: Flux Workspace
@@ -41,6 +45,13 @@ on:
       TF_MODULES_REF:
         type: choice
         description: Terraform Modules Ref
+        required: true
+        options: 
+        - main
+        - dev
+      ANSIBLE_MODULES_REF:
+        type: choice
+        description: Ansible Modules Ref
         required: true
         options: 
         - main
@@ -138,6 +149,16 @@ jobs:
       run: |
         sed -i 's|{prefix}|${{ env.RESOURCE_PREFIX }}|g' files/config.json
     - 
+      name: Update Terraform Ref
+      run: |
+        sed -i 's|modules-terraform.git//modules/cloud-init?ref=main|modules-terraform.git//modules/cloud-init?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
+        sed -i 's|modules-terraform.git//modules/hetzner/network?ref=main|modules-terraform.git//modules/hetzner/network?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
+        sed -i 's|modules-terraform.git//modules/hetzner/node?ref=main|modules-terraform.git//modules/hetzner/node?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
+    - 
+      name: Update Ansible Ref
+      run: |
+        sed -i 's|version: main|version: ${{ inputs.ANSIBLE_MODULES_REF }}|g' ansible/requirements.yml
+    - 
       name: Terraform Plan
       uses: labrats-work/action-terraform@main
       with:
@@ -150,7 +171,7 @@ jobs:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
       name: Terraform Apply
-      if: inputs.TERRAFORM_APPLY == 'true'
+      if: inputs.TERRAFORM_APPLY 
       uses: labrats-work/action-terraform@main
       with:
         verb: apply
@@ -160,7 +181,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: inputs.TERRAFORM_APPLY == 'true' && inputs.ANSIBLE_APPLY == 'true'
+      if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
       name: Run playbook
       uses: labrats-work/action-ansible@main
       with:
@@ -171,13 +192,13 @@ jobs:
         FLUX_INIT_PATH: "clusters/${{ inputs.FLUX_WORKSPACE }}"
         FLUX_INIT_TOKEN: "${{ secrets.FLUX_INIT_TOKEN_2 }}"
     - 
-      if: inputs.TERRAFORM_APPLY == 'true'
+      if: inputs.TERRAFORM_APPLY
       name: Cluster Timeout
       run: |
         echo "Will destroy cluster in ${{ inputs.LIFETIME }}."
         sleep ${{ inputs.LIFETIME }}
     - 
-      if: always() && inputs.TERRAFORM_APPLY == 'true'
+      if: always() && inputs.TERRAFORM_APPLY
       id: destroy
       continue-on-error: true
       name: Terraform Destroy
@@ -190,7 +211,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: always() && inputs.TERRAFORM_APPLY == 'true' && steps.destroy.outcome == 'failure'
+      if: always() && inputs.TERRAFORM_APPLY && steps.destroy.outcome == 'failure'
       id: destroy2
       continue-on-error: true
       name: Terraform Destroy
@@ -203,7 +224,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: always() && inputs.TERRAFORM_APPLY == 'true' && steps.destroy2.outcome == 'failure'
+      if: always() && inputs.TERRAFORM_APPLY  && steps.destroy2.outcome == 'failure'
       id: destroy3
       continue-on-error: true
       name: Terraform Destroy
