@@ -21,7 +21,7 @@ permissions:
 jobs:
   deploy:
     uses: ./.github/workflows/deploy.yml
-    inputs:
+    with:
       TF_WORKSPACE: ""
       TF_MODULES_REF: ${{ github.head_ref || github.ref_name }}
       FLUX_WORKSPACE: ${{ github.head_ref || github.ref_name }}
