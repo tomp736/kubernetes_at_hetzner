@@ -33,6 +33,7 @@ jobs:
   deploy:
     name: 'Deploy'
     runs-on: ubuntu-latest
+    environment: "${{ github.event.inputs.workspace }}"
     concurrency: 
       group: "${{ github.event.inputs.workspace }}-workspace-"
       cancel-in-progress: false      
@@ -119,6 +120,11 @@ jobs:
       uses: labrats-work/action-ansible@main
       with:
         workingDirectory: ./ansible
+      env:
+        FLUX_INIT_OWNER: "tomp736"
+        FLUX_INIT_REPO: "kubernetes_at_hetzner_flux"
+        FLUX_INIT_PATH: "clusters/${{ github.event.inputs.workspace }}"
+        FLUX_INIT_TOKEN: "${{ secrets.FLUX_INIT_TOKEN_2 }}"
     - 
       name: Cluster Timeout
       run: |
