@@ -1,7 +1,6 @@
 name: 'Deploy E2E Test'
 
 on:
-  workflow_dispatch:
   pull_request:
     branches:    
       - main  
@@ -20,123 +19,10 @@ permissions:
 
 jobs:
   deploy:
-    name: 'Test E2E'
-    runs-on: ubuntu-latest
-    concurrency: 
-      group: ${{ github.head_ref || github.ref_name }}
-      cancel-in-progress: false      
-    steps:
-    - 
-      name: Checkout
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ env.BRANCH_NAME }}
-    - 
-      name: Create keypair for test.
-      run: |
-        ssh-keygen -t ed25519 -N '' -f id_ed25519
-        xargs -a id_ed25519 -I{} -d'\n' echo ::add-mask::{}
-        xargs -a id_ed25519.pub -I{} -d'\n' echo ::add-mask::{}
-    - 
-      name: Load keypair for test.
-      run: |
-        echo "Loading KEYFILE \"id_ed25519\" into GITHUB_ENV."
-        echo 'KEYFILE<<EOF' >> $GITHUB_ENV
-        cat id_ed25519 >> $GITHUB_ENV
-        echo EOF >> $GITHUB_ENV
-
-        echo "Loading PUBKEYFILE \"id_ed25519.pub\" into GITHUB_ENV."
-        echo 'PUBKEYFILE<<EOF' >> $GITHUB_ENV
-        cat id_ed25519.pub >> $GITHUB_ENV
-        echo EOF >> $GITHUB_ENV
-    - 
-      name: Create default.tfvars file
-      run: |
-        echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
-        echo "public_key = \"${{ env.PUBKEYFILE }}\"" >> default.tfvars
-    -
-      if: github.ref != 'refs/heads/main'
-      name: Update terraform refs to dev for all branches but main.
-      run: |
-        sed -i 's|?ref=main|?ref=dev|g' main.tf
-    - 
-      name: Update prefix for resources.
-      run: |
-        sed -i 's|{prefix}|${{ env.RESOURCE_PREFIX }}|g' files/config.json
-    - 
-      name: Terraform Plan
-      uses: labrats-work/action-terraform@main
-      with:
-        verb: plan
-        init: yes
-        varsFile: default.tfvars
-        planFile: tfplan
-      env:
-        TF_CLI_CONFIG_FILE: default.tfrc
-    - 
-      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
-      name: Terraform Apply
-      uses: labrats-work/action-terraform@main
-      with:
-        verb: apply
-        init: yes
-        planFile: tfplan
-      env:
-        TF_CLI_CONFIG_FILE: default.tfrc
-    - 
-      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
-      name: Cache Ansible Collections
-      uses: actions/cache@v3
-      with:
-        key: ansible-${{ env.BRANCH_NAME }}
-        path: |
-          ~/.ansible/collections
-    - 
-      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
-      name: Run playbook
-      uses: labrats-work/action-ansible@main
-      with:
-        workingDirectory: ./ansible
-    - 
-      if: always() && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
-      name: Cluster Timeout
-      run: |
-        echo "Will destroy cluster in 1m."
-        sleep 1m
-    - 
-      if: always()
-      id: destroy
-      continue-on-error: true
-      name: Terraform Destroy
-      uses: labrats-work/action-terraform@main
-      with:
-        verb: destroy
-        init: yes
-        varsFile: default.tfvars
-      env:
-        TF_CLI_CONFIG_FILE: default.tfrc
-    - 
-      if: always() && steps.destroy.outcome == 'failure' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
-      id: destroy2
-      continue-on-error: true
-      name: Terraform Destroy
-      uses: labrats-work/action-terraform@main
-      with:
-        verb: destroy
-        init: yes
-        varsFile: default.tfvars
-      env:
-        TF_CLI_CONFIG_FILE: default.tfrc
-    - 
-      if: always() && steps.destroy2.outcome == 'failure' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
-      id: destroy3
-      continue-on-error: true
-      name: Terraform Destroy
-      uses: labrats-work/action-terraform@main
-      with:
-        verb: destroy
-        init: yes
-        varsFile: default.tfvars
-      env:
-        TF_CLI_CONFIG_FILE: default.tfrc
-    
+    uses: ./.github/workflows/deploy.yaml
+    inputs:
+      TF_WORKSPACE: ""
+      FLUX_WORKSPACE: ${{ github.head_ref || github.ref_name }}
+      TF_MODULES_REF: ${{ github.head_ref || github.ref_name }}
+      LIFETIME: 1m
+    secrets: inherit  
