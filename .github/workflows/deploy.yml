@@ -11,6 +11,10 @@ on:
         type: string
         description: Terraform Modules Ref
         required: true
+      ANSIBLE_MODULES_REF:
+        type: string
+        description: Ansible Modules Ref
+        required: true
       FLUX_WORKSPACE:
         type: string
         description: Flux Workspace
@@ -41,6 +45,13 @@ on:
       TF_MODULES_REF:
         type: choice
         description: Terraform Modules Ref
+        required: true
+        options: 
+        - main
+        - dev
+      ANSIBLE_MODULES_REF:
+        type: choice
+        description: Ansible Modules Ref
         required: true
         options: 
         - main
@@ -137,6 +148,16 @@ jobs:
       name: Update prefix for resources.
       run: |
         sed -i 's|{prefix}|${{ env.RESOURCE_PREFIX }}|g' files/config.json
+    - 
+      name: Update Terraform Ref
+      run: |
+        sed -i 's|modules-terraform.git//modules/hetzner/network?ref=main|modules-terraform.git//modules/hetzner/network?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
+        sed -i 's|modules-terraform.git//modules/hetzner/cloud-init?ref=main|modules-terraform.git//modules/hetzner/cloud-init?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
+        sed -i 's|modules-terraform.git//modules/hetzner/node?ref=main|modules-terraform.git//modules/hetzner/node?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
+    - 
+      name: Update Ansible Ref
+      run: |
+        sed -i 's|modules-ansible.git@main|modules-ansible.git@${{ inputs.ANSIBLE_MODULES_REF }}|g' ansible/requirements.yml
     - 
       name: Terraform Plan
       uses: labrats-work/action-terraform@main
