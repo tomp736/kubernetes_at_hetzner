@@ -6,23 +6,37 @@ on:
       TF_WORKSPACE:
         type: choice
         description: Terraform Remote Workspace
+        required: true
         options: 
-        - ""
+        - "none"
         - tomp736
       FLUX_WORKSPACE:
         type: choice
         description: Terraform Remote Workspace
+        required: true
         options: 
         - tomp736
+      TERRAFORM_APPLY:
+        type: boolean
+        description: Apply Terraform
+        required: true
+        default: false
+      ANSIBLE_APPLY:
+        type: boolean
+        description: Apply Ansible
+        required: true
+        default: false
       TF_MODULES_REF:
         type: choice
         description: Terraform Modules Ref
+        required: true
         options: 
         - main
         - dev
       LIFETIME:
         type: choice
         description: Lifetime of cluster (minutes).
+        required: true
         options:
         - 1m
         - 30m
@@ -30,7 +44,7 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  RESOURCE_PREFIX: "${{ github.event.inputs.TF_WORKSPACE }}-${{ github.head_ref || github.ref_name }}-"
+  RESOURCE_PREFIX: "${{ github.event.inputs.TF_WORKSPACE == "none" && github.sha || format('{0}-{1}-', github.event.inputs.TF_WORKSPACE, github.head_ref || github.ref_name) }}
 
 permissions:
   contents: read
@@ -41,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: "${{ github.event.inputs.TF_WORKSPACE }}"
     concurrency: 
-      group: "${{ github.event.inputs.TF_WORKSPACE }}-${{ github.head_ref || github.ref_name }}"
+      group: ${{ github.event.inputs.TF_WORKSPACE == "none" && github.sha || format('{0}-{1}', github.event.inputs.TF_WORKSPACE, github.head_ref || github.ref_name) }}
       cancel-in-progress: false      
     steps:
     - 
@@ -73,7 +87,7 @@ jobs:
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
         echo "public_key = \"${{ env.PUBKEYFILE }}\"" >> default.tfvars
     - 
-      if: ${{ github.event.inputs.TF_WORKSPACE }} != ""
+      if: ${{ github.event.inputs.TF_WORKSPACE }} != "none"
       name: Apply changes for remote backend
       run: |
         echo "Create default.tfrc file"
@@ -107,6 +121,7 @@ jobs:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
       name: Terraform Apply
+      if: github.event.inputs.TERRAFORM_APPLY == 'true'
       uses: labrats-work/action-terraform@main
       with:
         verb: apply
@@ -116,6 +131,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
+      if: github.event.inputs.TERRAFORM_APPLY == 'true' && github.event.inputs.ANSIBLE_APPLY == 'true'
       name: Run playbook
       uses: labrats-work/action-ansible@main
       with:
@@ -131,7 +147,7 @@ jobs:
         echo "Will destroy cluster in ${{ github.event.inputs.LIFETIME }}."
         sleep ${{ github.event.inputs.LIFETIME }}
     - 
-      if: always()
+      if: always() && github.event.inputs.TERRAFORM_APPLY == 'true'
       id: destroy
       continue-on-error: true
       name: Terraform Destroy
@@ -144,7 +160,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: always() && steps.destroy.outcome == 'failure'
+      if: always() && github.event.inputs.TERRAFORM_APPLY == 'true' && steps.destroy.outcome == 'failure'
       id: destroy2
       continue-on-error: true
       name: Terraform Destroy
@@ -157,7 +173,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: always() && steps.destroy2.outcome == 'failure'
+      if: always() && github.event.inputs.TERRAFORM_APPLY == 'true' && steps.destroy2.outcome == 'failure'
       id: destroy3
       continue-on-error: true
       name: Terraform Destroy
