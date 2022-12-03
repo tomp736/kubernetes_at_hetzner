@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy.yaml
+    uses: ./.github/workflows/deploy.yml
     inputs:
       TF_WORKSPACE: ""
       TF_MODULES_REF: ${{ github.head_ref || github.ref_name }}
