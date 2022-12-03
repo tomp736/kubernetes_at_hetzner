@@ -190,7 +190,7 @@ jobs:
         FLUX_INIT_OWNER: "tomp736"
         FLUX_INIT_REPO: "kubernetes_at_hetzner_flux"
         FLUX_INIT_PATH: "clusters/${{ inputs.FLUX_WORKSPACE }}"
-        FLUX_INIT_TOKEN: "${{ secrets.FLUX_INIT_TOKEN_2 }}"
+        FLUX_INIT_TOKEN: "${{ secrets.FLUX_INIT_TOKEN }}"
     - 
       if: inputs.TERRAFORM_APPLY
       name: Cluster Timeout
