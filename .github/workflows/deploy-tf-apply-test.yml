@@ -1,15 +1,7 @@
-name: 'Deploy E2E Test'
+name: 'Deploy TF Apply Test'
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:    
-      - main  
-      - dev
-  push:
-    paths:
-      - '!.github/workflows/deploy.yml'
-      - '!**/README.md'
 
 permissions:
   contents: read
@@ -23,6 +15,6 @@ jobs:
       ANSIBLE_MODULES_REF: ${{ github.base_ref || 'dev' }}
       FLUX_WORKSPACE: ${{ github.base_ref || 'dev' }}
       TERRAFORM_APPLY: true
-      ANSIBLE_APPLY: true
+      ANSIBLE_APPLY: false
       LIFETIME: 1m
     secrets: inherit  
