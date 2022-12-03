@@ -22,8 +22,8 @@ jobs:
     uses: ./.github/workflows/deploy.yaml
     inputs:
       TF_WORKSPACE: ""
-      FLUX_WORKSPACE: ${{ github.head_ref || github.ref_name }}
       TF_MODULES_REF: ${{ github.head_ref || github.ref_name }}
+      FLUX_WORKSPACE: ${{ github.head_ref || github.ref_name }}
       TERRAFORM_APPLY: true
       ANSIBLE_APPLY: true
       LIFETIME: 1m

@@ -10,6 +10,13 @@ on:
         options: 
         - "none"
         - tomp736
+      TF_MODULES_REF:
+        type: choice
+        description: Terraform Modules Ref
+        required: true
+        options: 
+        - main
+        - dev
       FLUX_WORKSPACE:
         type: choice
         description: Terraform Remote Workspace
@@ -26,13 +33,6 @@ on:
         description: Apply Ansible
         required: true
         default: false
-      TF_MODULES_REF:
-        type: choice
-        description: Terraform Modules Ref
-        required: true
-        options: 
-        - main
-        - dev
       LIFETIME:
         type: choice
         description: Lifetime of cluster (minutes).
