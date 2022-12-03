@@ -143,6 +143,7 @@ jobs:
         FLUX_INIT_PATH: "clusters/${{ github.event.inputs.FLUX_WORKSPACE }}"
         FLUX_INIT_TOKEN: "${{ secrets.FLUX_INIT_TOKEN_2 }}"
     - 
+      if: github.event.inputs.TERRAFORM_APPLY == 'true'
       name: Cluster Timeout
       run: |
         echo "Will destroy cluster in ${{ github.event.inputs.LIFETIME }}."
