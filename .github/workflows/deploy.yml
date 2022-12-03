@@ -132,6 +132,7 @@ jobs:
         sleep ${{ github.event.inputs.lifetime }}
     - 
       if: always()
+      id: destroy
       continue-on-error: true
       name: Terraform Destroy
       uses: labrats-work/action-terraform@main

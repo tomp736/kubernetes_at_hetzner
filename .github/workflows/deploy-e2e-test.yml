@@ -99,6 +99,13 @@ jobs:
         workingDirectory: ./ansible
     - 
       if: always() && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
+      name: Cluster Timeout
+      run: |
+        echo "Will destroy cluster in 1m."
+        sleep 1m
+    - 
+      if: always()
+      id: destroy
       continue-on-error: true
       name: Terraform Destroy
       uses: labrats-work/action-terraform@main
