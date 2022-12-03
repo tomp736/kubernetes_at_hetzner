@@ -44,8 +44,8 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  RESOURCE_PREFIX: ${{ github.event.inputs.TF_WORKSPACE == 'none' && github.sha || github.event.inputs.TF_WORKSPACE }}
-  TF_BACKEND: ${{ github.event.inputs.TF_WORKSPACE == 'none' && '' || 'config.remote.tfbackend' }}
+  RESOURCE_PREFIX: ${{ github.event.inputs.TF_WORKSPACE != 'none' && github.event.inputs.TF_WORKSPACE || github.sha }}
+  TF_BACKEND: ${{ github.event.inputs.TF_WORKSPACE != 'none' && 'config.remote.tfbackend' || '' }}
 
 permissions:
   contents: read
