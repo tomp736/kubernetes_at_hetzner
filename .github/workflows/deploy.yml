@@ -19,7 +19,7 @@ on:
         - dev
       FLUX_WORKSPACE:
         type: choice
-        description: Terraform Remote Workspace
+        description: Flux Workspace
         required: true
         options: 
         - tomp736
