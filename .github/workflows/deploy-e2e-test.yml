@@ -12,7 +12,7 @@ on:
       - '!**/README.md'
 
 permissions:
-  contents: reads
+  contents: read
 
 jobs:
   deploy:
