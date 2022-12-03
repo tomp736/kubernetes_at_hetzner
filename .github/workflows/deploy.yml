@@ -87,7 +87,7 @@ jobs:
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
         echo "public_key = \"${{ env.PUBKEYFILE }}\"" >> default.tfvars
     - 
-      if: ${{ github.event.inputs.TF_WORKSPACE }} != "none"
+      if: ${{ github.event.inputs.TF_WORKSPACE != 'none' }}
       name: Apply changes for remote backend
       run: |
         echo "Create default.tfrc file"
