@@ -45,6 +45,7 @@ on:
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
   RESOURCE_PREFIX: ${{ github.event.inputs.TF_WORKSPACE == 'none' && github.sha || github.event.inputs.TF_WORKSPACE }}
+  TF_BACKEND: ${{ github.event.inputs.TF_WORKSPACE == 'none' && config.remote.tfbackend || '' }}
 
 permissions:
   contents: read
@@ -116,7 +117,7 @@ jobs:
         init: yes
         varsFile: default.tfvars
         planFile: tfplan
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: ${{ env.TF_BACKEND }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
@@ -127,7 +128,7 @@ jobs:
         verb: apply
         init: yes
         planFile: tfplan
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: ${{ env.TF_BACKEND }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
@@ -156,7 +157,7 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: ${{ env.TF_BACKEND }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
@@ -169,7 +170,7 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: ${{ env.TF_BACKEND }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
@@ -182,7 +183,7 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: ${{ env.TF_BACKEND }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     
