@@ -22,7 +22,7 @@ jobs:
   deploy:
     uses: ./.github/workflows/deploy.yml
     with:
-      TF_WORKSPACE: "none"
+      TF_WORKSPACE: none
       TF_MODULES_REF: ${{ github.head_ref || github.ref_name }}
       FLUX_WORKSPACE: ${{ github.head_ref || github.ref_name }}
       TERRAFORM_APPLY: true
