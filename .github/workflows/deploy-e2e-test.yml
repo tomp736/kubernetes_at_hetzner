@@ -74,6 +74,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
+      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
       name: Terraform Apply
       uses: labrats-work/action-terraform@main
       with:
@@ -97,6 +98,7 @@ jobs:
       with:
         workingDirectory: ./ansible
     - 
+      if: always() && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
       name: Cluster Timeout
       run: |
         echo "Will destroy cluster in 1m."
@@ -114,7 +116,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: always() && steps.destroy.outcome == 'failure'
+      if: always() && steps.destroy.outcome == 'failure' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
       id: destroy2
       continue-on-error: true
       name: Terraform Destroy
@@ -126,7 +128,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: always() && steps.destroy2.outcome == 'failure'
+      if: always() && steps.destroy2.outcome == 'failure' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
       id: destroy3
       continue-on-error: true
       name: Terraform Destroy
