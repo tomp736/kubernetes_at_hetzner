@@ -44,7 +44,7 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  RESOURCE_PREFIX: ${{ github.event.inputs.TF_WORKSPACE == "none" && github.sha || format('{0}-{1}-', github.event.inputs.TF_WORKSPACE, (github.head_ref || github.ref_name)) }}
+  RESOURCE_PREFIX: ${{ github.event.inputs.TF_WORKSPACE == "none" && github.sha || github.event.inputs.TF_WORKSPACE }}
 
 permissions:
   contents: read
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: "${{ github.event.inputs.TF_WORKSPACE }}"
     concurrency: 
-      group: ${{ github.event.inputs.TF_WORKSPACE == "none" && github.sha || format('{0}-{1}', github.event.inputs.TF_WORKSPACE, (github.head_ref || github.ref_name)) }}
+      group: ${{ github.event.inputs.TF_WORKSPACE == "none" && github.sha || github.event.inputs.TF_WORKSPACE }}
       cancel-in-progress: false      
     steps:
     - 
