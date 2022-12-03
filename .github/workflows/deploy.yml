@@ -1,6 +1,46 @@
 name: 'Deploy'
 
 on:
+  workflow_call:
+    inputs:
+      TF_WORKSPACE:
+        type: choice
+        description: Terraform Remote Workspace
+        required: true
+        options: 
+        - "none"
+        - tomp736
+      TF_MODULES_REF:
+        type: choice
+        description: Terraform Modules Ref
+        required: true
+        options: 
+        - main
+        - dev
+      FLUX_WORKSPACE:
+        type: choice
+        description: Flux Workspace
+        required: true
+        options: 
+        - tomp736
+      TERRAFORM_APPLY:
+        type: boolean
+        description: Apply Terraform
+        required: true
+        default: false
+      ANSIBLE_APPLY:
+        type: boolean
+        description: Apply Ansible
+        required: true
+        default: false
+      LIFETIME:
+        type: choice
+        description: Lifetime of cluster (minutes).
+        required: true
+        options:
+        - 1m
+        - 30m
+        - 60m
   workflow_dispatch:
     inputs:
       TF_WORKSPACE:
