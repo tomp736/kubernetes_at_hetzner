@@ -72,8 +72,8 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  RESOURCE_PREFIX: ${{ github.event.inputs.TF_WORKSPACE != 'none' && github.event.inputs.TF_WORKSPACE || github.sha }}
-  TF_BACKEND: ${{ github.event.inputs.TF_WORKSPACE != 'none' && 'config.remote.tfbackend' || '' }}
+  RESOURCE_PREFIX: ${{ inputs.TF_WORKSPACE != 'none' && inputs.TF_WORKSPACE || github.sha }}
+  TF_BACKEND: ${{ inputs.TF_WORKSPACE != 'none' && 'config.remote.tfbackend' || '' }}
 
 permissions:
   contents: read
@@ -82,9 +82,9 @@ jobs:
   deploy:
     name: 'Deploy'
     runs-on: ubuntu-latest
-    environment: "${{ github.event.inputs.TF_WORKSPACE }}"
+    environment: "${{ inputs.TF_WORKSPACE }}"
     concurrency: 
-      group: ${{ github.event.inputs.TF_WORKSPACE == 'none' && github.sha || github.event.inputs.TF_WORKSPACE }}
+      group: ${{ inputs.TF_WORKSPACE == 'none' && github.sha || inputs.TF_WORKSPACE }}
       cancel-in-progress: false      
     steps:
     - 
@@ -116,7 +116,7 @@ jobs:
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
         echo "public_key = \"${{ env.PUBKEYFILE }}\"" >> default.tfvars
     - 
-      if: ${{ github.event.inputs.TF_WORKSPACE != 'none' }}
+      if: ${{ inputs.TF_WORKSPACE != 'none' }}
       name: Apply changes for remote backend
       run: |
         echo "Create default.tfrc file"
@@ -127,7 +127,7 @@ jobs:
 
         echo "Create config.remote.tfbackend"
         echo "# config.remote.tfbackend" > config.remote.tfbackend
-        echo "workspaces { name = \"kubernetes_at_hetzner_${{ github.event.inputs.TF_WORKSPACE }}\" }" >> config.remote.tfbackend
+        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.TF_WORKSPACE }}\" }" >> config.remote.tfbackend
         echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
         echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
 
@@ -150,7 +150,7 @@ jobs:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
       name: Terraform Apply
-      if: github.event.inputs.TERRAFORM_APPLY == 'true'
+      if: inputs.TERRAFORM_APPLY == 'true'
       uses: labrats-work/action-terraform@main
       with:
         verb: apply
@@ -160,7 +160,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: github.event.inputs.TERRAFORM_APPLY == 'true' && github.event.inputs.ANSIBLE_APPLY == 'true'
+      if: inputs.TERRAFORM_APPLY == 'true' && inputs.ANSIBLE_APPLY == 'true'
       name: Run playbook
       uses: labrats-work/action-ansible@main
       with:
@@ -168,16 +168,16 @@ jobs:
       env:
         FLUX_INIT_OWNER: "tomp736"
         FLUX_INIT_REPO: "kubernetes_at_hetzner_flux"
-        FLUX_INIT_PATH: "clusters/${{ github.event.inputs.FLUX_WORKSPACE }}"
+        FLUX_INIT_PATH: "clusters/${{ inputs.FLUX_WORKSPACE }}"
         FLUX_INIT_TOKEN: "${{ secrets.FLUX_INIT_TOKEN_2 }}"
     - 
-      if: github.event.inputs.TERRAFORM_APPLY == 'true'
+      if: inputs.TERRAFORM_APPLY == 'true'
       name: Cluster Timeout
       run: |
-        echo "Will destroy cluster in ${{ github.event.inputs.LIFETIME }}."
-        sleep ${{ github.event.inputs.LIFETIME }}
+        echo "Will destroy cluster in ${{ inputs.LIFETIME }}."
+        sleep ${{ inputs.LIFETIME }}
     - 
-      if: always() && github.event.inputs.TERRAFORM_APPLY == 'true'
+      if: always() && inputs.TERRAFORM_APPLY == 'true'
       id: destroy
       continue-on-error: true
       name: Terraform Destroy
@@ -190,7 +190,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: always() && github.event.inputs.TERRAFORM_APPLY == 'true' && steps.destroy.outcome == 'failure'
+      if: always() && inputs.TERRAFORM_APPLY == 'true' && steps.destroy.outcome == 'failure'
       id: destroy2
       continue-on-error: true
       name: Terraform Destroy
@@ -203,7 +203,7 @@ jobs:
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: always() && github.event.inputs.TERRAFORM_APPLY == 'true' && steps.destroy2.outcome == 'failure'
+      if: always() && inputs.TERRAFORM_APPLY == 'true' && steps.destroy2.outcome == 'failure'
       id: destroy3
       continue-on-error: true
       name: Terraform Destroy

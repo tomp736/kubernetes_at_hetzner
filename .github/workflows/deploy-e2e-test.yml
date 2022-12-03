@@ -11,12 +11,8 @@ on:
       - '!.github/workflows/deploy.yml'
       - '!**/README.md'
 
-env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  RESOURCE_PREFIX: "${{ github.head_ref || github.ref_name }}-"
-
 permissions:
-  contents: read
+  contents: reads
 
 jobs:
   deploy:
