@@ -11,9 +11,9 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       TF_WORKSPACE: none
-      TF_MODULES_REF: ${{ github.head_ref || github.ref_name }}
-      ANSIBLE_MODULES_REF: ${{ github.head_ref || github.ref_name }}
-      FLUX_WORKSPACE: ${{ github.head_ref || github.ref_name }}
+      TF_MODULES_REF: ${{ github.base_ref || 'dev' }}
+      ANSIBLE_MODULES_REF: ${{ github.base_ref || 'dev' }}
+      FLUX_WORKSPACE: ${{ github.base_ref || 'dev' }}
       TERRAFORM_APPLY: true
       ANSIBLE_APPLY: false
       LIFETIME: 1m
