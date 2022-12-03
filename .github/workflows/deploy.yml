@@ -1,22 +1,70 @@
-name: 'Deploy Workspace'
+name: 'Deploy'
 
 on:
+  workflow_call:
+    inputs:
+      TF_WORKSPACE:
+        type: string
+        description: Terraform Remote Workspace
+        required: true
+      TF_MODULES_REF:
+        type: string
+        description: Terraform Modules Ref
+        required: true
+      FLUX_WORKSPACE:
+        type: string
+        description: Flux Workspace
+        required: true
+      TERRAFORM_APPLY:
+        type: boolean
+        description: Apply Terraform
+        required: true
+        default: false
+      ANSIBLE_APPLY:
+        type: boolean
+        description: Apply Ansible
+        required: true
+        default: false
+      LIFETIME:
+        type: string
+        description: Lifetime of cluster (minutes).
+        required: true
   workflow_dispatch:
     inputs:
-      workspace:
+      TF_WORKSPACE:
         type: choice
-        description: Workspace to use
+        description: Terraform Remote Workspace
+        required: true
         options: 
+        - "none"
         - tomp736
-      depsref:
+      TF_MODULES_REF:
         type: choice
-        description: Repo deps ref
+        description: Terraform Modules Ref
+        required: true
         options: 
         - main
         - dev
-      lifetime:
+      FLUX_WORKSPACE:
+        type: choice
+        description: Flux Workspace
+        required: true
+        options: 
+        - tomp736
+      TERRAFORM_APPLY:
+        type: boolean
+        description: Apply Terraform
+        required: true
+        default: false
+      ANSIBLE_APPLY:
+        type: boolean
+        description: Apply Ansible
+        required: true
+        default: false
+      LIFETIME:
         type: choice
         description: Lifetime of cluster (minutes).
+        required: true
         options:
         - 1m
         - 30m
@@ -24,7 +72,8 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  RESOURCE_PREFIX: "${{ github.event.inputs.workspace }}-workspace-"
+  RESOURCE_PREFIX: ${{ inputs.TF_WORKSPACE != 'none' && inputs.TF_WORKSPACE || github.sha }}
+  TF_BACKEND: ${{ inputs.TF_WORKSPACE != 'none' && 'config.remote.tfbackend' || '' }}
 
 permissions:
   contents: read
@@ -33,9 +82,9 @@ jobs:
   deploy:
     name: 'Deploy'
     runs-on: ubuntu-latest
-    environment: "${{ github.event.inputs.workspace }}"
+    environment: "${{ inputs.TF_WORKSPACE }}"
     concurrency: 
-      group: "${{ github.event.inputs.workspace }}-workspace-"
+      group: ${{ inputs.TF_WORKSPACE == 'none' && github.sha || inputs.TF_WORKSPACE }}
       cancel-in-progress: false      
     steps:
     - 
@@ -67,6 +116,7 @@ jobs:
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
         echo "public_key = \"${{ env.PUBKEYFILE }}\"" >> default.tfvars
     - 
+      if: ${{ inputs.TF_WORKSPACE != 'none' }}
       name: Apply changes for remote backend
       run: |
         echo "Create default.tfrc file"
@@ -77,7 +127,7 @@ jobs:
 
         echo "Create config.remote.tfbackend"
         echo "# config.remote.tfbackend" > config.remote.tfbackend
-        echo "workspaces { name = \"kubernetes_at_hetzner_${{ github.event.inputs.workspace }}\" }" >> config.remote.tfbackend
+        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.TF_WORKSPACE }}\" }" >> config.remote.tfbackend
         echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
         echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
 
@@ -95,27 +145,22 @@ jobs:
         init: yes
         varsFile: default.tfvars
         planFile: tfplan
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: ${{ env.TF_BACKEND }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
       name: Terraform Apply
+      if: inputs.TERRAFORM_APPLY == 'true'
       uses: labrats-work/action-terraform@main
       with:
         verb: apply
         init: yes
         planFile: tfplan
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: ${{ env.TF_BACKEND }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      name: Cache Ansible Collections
-      uses: actions/cache@v3
-      with:
-        key: ansible-${{ env.BRANCH_NAME }}
-        path: |
-          ~/.ansible/collections
-    - 
+      if: inputs.TERRAFORM_APPLY == 'true' && inputs.ANSIBLE_APPLY == 'true'
       name: Run playbook
       uses: labrats-work/action-ansible@main
       with:
@@ -123,15 +168,16 @@ jobs:
       env:
         FLUX_INIT_OWNER: "tomp736"
         FLUX_INIT_REPO: "kubernetes_at_hetzner_flux"
-        FLUX_INIT_PATH: "clusters/${{ github.event.inputs.workspace }}"
+        FLUX_INIT_PATH: "clusters/${{ inputs.FLUX_WORKSPACE }}"
         FLUX_INIT_TOKEN: "${{ secrets.FLUX_INIT_TOKEN_2 }}"
     - 
+      if: inputs.TERRAFORM_APPLY == 'true'
       name: Cluster Timeout
       run: |
-        echo "Will destroy cluster in ${{ github.event.inputs.lifetime }}."
-        sleep ${{ github.event.inputs.lifetime }}
+        echo "Will destroy cluster in ${{ inputs.LIFETIME }}."
+        sleep ${{ inputs.LIFETIME }}
     - 
-      if: always()
+      if: always() && inputs.TERRAFORM_APPLY == 'true'
       id: destroy
       continue-on-error: true
       name: Terraform Destroy
@@ -140,11 +186,11 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: ${{ env.TF_BACKEND }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: always() && steps.destroy.outcome == 'failure'
+      if: always() && inputs.TERRAFORM_APPLY == 'true' && steps.destroy.outcome == 'failure'
       id: destroy2
       continue-on-error: true
       name: Terraform Destroy
@@ -153,11 +199,11 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: ${{ env.TF_BACKEND }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     - 
-      if: always() && steps.destroy2.outcome == 'failure'
+      if: always() && inputs.TERRAFORM_APPLY == 'true' && steps.destroy2.outcome == 'failure'
       id: destroy3
       continue-on-error: true
       name: Terraform Destroy
@@ -166,7 +212,7 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: ${{ env.TF_BACKEND }}
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
     
