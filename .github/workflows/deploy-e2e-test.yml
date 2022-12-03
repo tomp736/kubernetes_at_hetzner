@@ -1,6 +1,7 @@
 name: 'Deploy E2E Test'
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:    
       - main  
