@@ -1,0 +1,156 @@
+name: 'Workspace Deploy'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: 'Deploy'
+    runs-on: ubuntu-latest
+    environment: inputs.TF_WORKSPACE
+    concurrency: 
+      group: inputs.TF_WORKSPACE
+      cancel-in-progress: false      
+    steps:
+    - 
+      name: Checkout
+      uses: actions/checkout@v3
+    - 
+      name: Create default.tfvars file
+      run: |
+        echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
+        echo "public_key = \"xxx\"" >> default.tfvars
+    - 
+      if: inputs.TF_WORKSPACE != 'none'
+      name: Apply changes for remote backend
+      run: |
+        echo "Create default.tfrc file"
+        echo "# default.tfrc" > default.tfrc
+        echo "credentials \"app.terraform.io\" {" >> default.tfrc
+        echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> default.tfrc
+        echo "}" >> default.tfrc
+
+        echo "Create config.remote.tfbackend"
+        echo "# config.remote.tfbackend" > config.remote.tfbackend
+        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.TF_WORKSPACE }}\" }" >> config.remote.tfbackend
+        echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
+        echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
+
+        echo "Create config.remote.tfbackend"
+        sed -i 's|local|remote|g' providers.tf
+    - 
+      name: Update prefix for resources.
+      run: |
+        sed -i 's|{prefix}|${{ inputs.TF_WORKSPACE }}|g' files/config.json
+    - 
+      name: Update Terraform Ref
+      run: |
+        sed -i 's|modules-terraform.git//modules/cloud-init?ref=main|modules-terraform.git//modules/cloud-init?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
+        sed -i 's|modules-terraform.git//modules/hetzner/network?ref=main|modules-terraform.git//modules/hetzner/network?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
+        sed -i 's|modules-terraform.git//modules/hetzner/node?ref=main|modules-terraform.git//modules/hetzner/node?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
+    - 
+      name: Update Ansible Ref
+      run: |
+        sed -i 's|version: main|version: ${{ inputs.ANSIBLE_MODULES_REF }}|g' ansible/requirements.yml
+    - 
+      name: Terraform Plan
+      uses: labrats-work/action-terraform@main
+      with:
+        verb: plan
+        init: yes
+        varsFile: default.tfvars
+        planFile: tfplan
+        backendConfigFile: config.remote.tfbackend
+      env:
+        TF_CLI_CONFIG_FILE: default.tfrc
+    - 
+      name: Terraform Apply
+      if: inputs.TERRAFORM_APPLY 
+      uses: labrats-work/action-terraform@main
+      with:
+        verb: apply
+        init: yes
+        planFile: tfplan
+        backendConfigFile: config.remote.tfbackend
+      env:
+        TF_CLI_CONFIG_FILE: default.tfrc
+    - 
+      if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
+      name: Run playbook
+      uses: labrats-work/action-ansible@main
+      with:
+        workingDirectory: ./ansible
+        inventoryFile: inventory/hosts
+      env:
+        FLUX_INIT_OWNER: tomp736
+        FLUX_INIT_REPO: kubernetes_at_hetzner_flux
+        FLUX_INIT_PATH: ./clusters/${{ inputs.FLUX_WORKSPACE }}
+        FLUX_INIT_TOKEN: ${{ secrets.FLUX_INIT_TOKEN }}
+
+on:
+  workflow_call:
+    inputs:
+      TF_WORKSPACE:
+        type: string
+        description: Terraform Remote Workspace
+        required: true
+      TF_MODULES_REF:
+        type: string
+        description: Terraform Modules Ref
+        required: true
+      ANSIBLE_MODULES_REF:
+        type: string
+        description: Ansible Modules Ref
+        required: true
+      FLUX_WORKSPACE:
+        type: string
+        description: Flux Workspace
+        required: true
+      TERRAFORM_APPLY:
+        type: boolean
+        description: Apply Terraform
+        required: true
+        default: false
+      ANSIBLE_APPLY:
+        type: boolean
+        description: Apply Ansible
+        required: true
+        default: false
+  workflow_dispatch:
+    inputs:
+      TF_WORKSPACE:
+        type: choice
+        description: Terraform Remote Workspace
+        required: true
+        options:
+        - tomp736
+      TF_MODULES_REF:
+        type: choice
+        description: Terraform Modules Ref
+        required: true
+        options:
+        - main
+        - dev
+      ANSIBLE_MODULES_REF:
+        type: choice
+        description: Ansible Modules Ref
+        required: true
+        options:
+        - main
+        - dev
+      FLUX_WORKSPACE:
+        type: choice
+        description: Flux Workspace
+        required: true
+        options:
+        - tomp736
+      TERRAFORM_APPLY:
+        type: boolean
+        description: Apply Terraform
+        required: true
+        default: false
+      ANSIBLE_APPLY:
+        type: boolean
+        description: Apply Ansible
+        required: true
+        default: false
