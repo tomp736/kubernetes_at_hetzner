@@ -25,7 +25,7 @@ jobs:
 
           [ $DATE_EXP -le $DATE_NOW ] && echo 'cleanup=tomp736' >> $GITHUB_OUTPUT
   cleanup_run:
-    if: steps.cleanup_check.outputs.cleanup == 'tomp736'
+    if: needs.cleanup_check.outputs.cleanup == 'tomp736'
     needs: cleanup_check
     uses: ./.github/workflows/workspace-destroy.yml
     with:
