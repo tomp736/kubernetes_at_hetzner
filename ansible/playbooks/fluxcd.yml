@@ -9,3 +9,8 @@
   tasks:  
   - ansible.builtin.import_role:
       name: labrats_work.modules_ansible.fluxcd
+    vars: 
+      flux_init_owner: "{{ lookup('ansible.builtin.env','FLUX_INIT_OWNER') }}"
+      flux_init_repo: "{{ lookup('ansible.builtin.env','FLUX_INIT_REPO') }}"
+      flux_init_path: "{{ lookup('ansible.builtin.env','FLUX_INIT_PATH') }}"
+      flux_init_token: "{{ lookup('ansible.builtin.env','FLUX_INIT_TOKEN') }}"
