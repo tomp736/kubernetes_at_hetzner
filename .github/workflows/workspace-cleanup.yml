@@ -1,0 +1,35 @@
+name: 'Workspace Cleanup'
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '*/30 * * * *'
+
+jobs:
+  cleanup_check:
+    name: 'Cleanup'
+    runs-on: ubuntu-latest
+    outputs:
+      cleanup: ${{ steps.cleanup_check.outputs.cleanup }}
+    steps:
+      - name: Check if workspace last update was over 30 minutes ago.
+        id: cleanup_check
+        run: |
+          curl \
+          -H "Accept: application/vnd.github+json" \
+          https://api.github.com/repos/tomp736/kubernetes_at_hetzner/deployments?environment=tomp736 > deployments.json
+
+          DATE_DEP=$(jq -r '.[].updated_at' deployments.json | sort -r | head -n 1)
+          DATE_EXP=$(date -d "$DATE_DEP + 30 minutes" +%s)
+          DATE_NOW=$(date -u +%s)
+
+          [ $DATE_EXP -le $DATE_NOW ] && echo 'cleanup=tomp736' >> $GITHUB_OUTPUT
+  cleanup_run:
+    if: steps.cleanup_check.outputs.cleanup == 'tomp736'
+    needs: cleanup_check
+    uses: ./.github/workflows/workspace-destroy.yml
+    with:
+      TF_WORKSPACE: tomp736
+      TF_MODULES_REF: ${{ github.base_ref || 'dev' }}
+      PUBLIC_KEY: ${{ github.base_ref || 'dev' }}
+    secrets: inherit  
