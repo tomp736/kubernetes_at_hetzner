@@ -2,6 +2,6 @@
 .terraform*
 terraform.*
 *.tfvars
-ansible/inventory
 
-secrets/*
+ansible/inventory/**
+!ansible/inventory/README.md
