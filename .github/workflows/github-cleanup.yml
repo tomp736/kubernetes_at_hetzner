@@ -1,0 +1,12 @@
+name: 'Github Cleanup'
+
+jobs:
+  workflow:
+    steps:
+      - name: Delete workflow runs
+        uses: MajorScruffy/delete-old-workflow-runs@v0.2.0
+        with:
+          repository: tomp736/kubernetes_at_hetzner
+          older-than-seconds: 86400
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_WF_RW }}
