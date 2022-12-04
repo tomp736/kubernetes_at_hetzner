@@ -186,6 +186,7 @@ jobs:
       uses: labrats-work/action-ansible@main
       with:
         workingDirectory: ./ansible
+        inventoryFile: inventory/hosts
       env:
         FLUX_INIT_OWNER: tomp736
         FLUX_INIT_REPO: kubernetes_at_hetzner_flux
