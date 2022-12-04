@@ -23,7 +23,13 @@ jobs:
           DATE_EXP=$(date -d "$DATE_DEP + 30 minutes" +%s)
           DATE_NOW=$(date -u +%s)
 
-          [ $DATE_EXP -le $DATE_NOW ] && echo 'cleanup=tomp736' >> $GITHUB_OUTPUT
+          if [ $DATE_EXP -le $DATE_NOW ]
+          then 
+            echo 'cleanup=tomp736' >> $GITHUB_OUTPUT
+          else
+            echo 'cleanup=none' >> $GITHUB_OUTPUT
+          fi
+          
   cleanup_run:
     if: needs.cleanup_check.outputs.cleanup == 'tomp736'
     needs: cleanup_check
