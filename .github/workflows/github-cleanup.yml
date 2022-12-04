@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Delete workflow runs
-        uses: MajorScruffy/delete-old-workflow-runs@v0.2.0
+        uses: MajorScruffy/delete-old-workflow-runs@v0.3.0
         with:
           repository: tomp736/kubernetes_at_hetzner
           older-than-seconds: 86400
