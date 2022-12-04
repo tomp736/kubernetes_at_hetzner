@@ -7,9 +7,9 @@ jobs:
   deploy:
     name: 'Deploy'
     runs-on: ubuntu-latest
-    environment: inputs.TF_WORKSPACE
+    environment: ${{ inputs.TF_WORKSPACE }}
     concurrency: 
-      group: inputs.TF_WORKSPACE
+      group: ${{ inputs.TF_WORKSPACE }}
       cancel-in-progress: false      
     steps:
     - 
