@@ -13,6 +13,6 @@ jobs:
         uses: MajorScruffy/delete-old-workflow-runs@v0.3.0
         with:
           repository: tomp736/kubernetes_at_hetzner
-          older-than-seconds: 86400
+          older-than-seconds: 21600
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_WF_RW }}
