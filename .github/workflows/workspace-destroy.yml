@@ -18,8 +18,8 @@ jobs:
     - 
       name: Create default.tfvars file
       run: |
-        echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
-        echo "public_key = \"xxx\"" >> default.tfvars
+        echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" > default.tfvars
+        echo "public_key = \"${{ inputs.PUBLIC_KEY }}\"" >> default.tfvars
     - 
       name: Apply changes for remote backend
       run: |
@@ -59,6 +59,7 @@ jobs:
         backendConfigFile: config.remote.tfbackend
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
+        KEYFILE: ${{ secrets.SSH_KEY }}
 
 on:
   workflow_call:
@@ -70,6 +71,10 @@ on:
       TF_MODULES_REF:
         type: string
         description: Terraform Modules Ref
+        required: true
+      PUBLIC_KEY:
+        type: string
+        description: Public key to add to servers.
         required: true
   workflow_dispatch:
     inputs:
@@ -86,3 +91,9 @@ on:
         options: 
         - main
         - dev
+      PUBLIC_KEY:
+        type: choice
+        description: Public key to add to servers.
+        required: true
+        options:
+        - SHA256:rEksPjGdTEozmM1IfaJhJmr58OPWkVIlxQMawwb/Fgc u0@prt-dev-01

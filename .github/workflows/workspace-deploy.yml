@@ -18,8 +18,8 @@ jobs:
     - 
       name: Create default.tfvars file
       run: |
-        echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" >> default.tfvars
-        echo "public_key = \"xxx\"" >> default.tfvars
+        echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" > default.tfvars
+        echo "public_key = \"${{ inputs.PUBLIC_KEY }}\"" >> default.tfvars
     - 
       if: inputs.TF_WORKSPACE != 'none'
       name: Apply changes for remote backend
@@ -63,6 +63,7 @@ jobs:
         backendConfigFile: config.remote.tfbackend
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
+        KEYFILE: ${{ secrets.SSH_KEY }}
     - 
       name: Terraform Apply
       if: inputs.TERRAFORM_APPLY 
@@ -74,6 +75,7 @@ jobs:
         backendConfigFile: config.remote.tfbackend
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
+        KEYFILE: ${{ secrets.SSH_KEY }}
     - 
       if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
       name: Run playbook
@@ -86,6 +88,7 @@ jobs:
         FLUX_INIT_REPO: kubernetes_at_hetzner_flux
         FLUX_INIT_PATH: ./clusters/${{ inputs.FLUX_WORKSPACE }}
         FLUX_INIT_TOKEN: ${{ secrets.FLUX_INIT_TOKEN }}
+        KEYFILE: ${{ secrets.SSH_KEY }}
 
 on:
   workflow_call:
@@ -105,6 +108,10 @@ on:
       FLUX_WORKSPACE:
         type: string
         description: Flux Workspace
+        required: true
+      PUBLIC_KEY:
+        type: string
+        description: Public key to add to servers.
         required: true
       TERRAFORM_APPLY:
         type: boolean
@@ -144,6 +151,12 @@ on:
         required: true
         options:
         - tomp736
+      PUBLIC_KEY:
+        type: choice
+        description: Public key to add to servers.
+        required: true
+        options:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJfG+Q279TtMZcYGoyF5Z3TRuQlGc3QtGP4r7M3A7Hh u0@prt-dev-01
       TERRAFORM_APPLY:
         type: boolean
         description: Apply Terraform
