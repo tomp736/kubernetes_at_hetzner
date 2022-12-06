@@ -1,0 +1,14 @@
+ansible_ssh_proxy_command: >-
+  {% if bastion_host is defined and bastion_host != '' %}
+  ssh {{ hostvars[bastion_host]['ansible_ssh_user'] }}@{{ hostvars[bastion_host]['ansible_ssh_host'] }}
+  -o Port={{ hostvars[bastion_host]['ansible_ssh_port'] | default(22) }}
+  -o ControlMaster=auto 
+  -o ControlPersist=30m
+  -o ForwardAgent=yes
+  -W %h:%p
+  {% endif %}
+
+ansible_ssh_common_args: >-
+  {% if bastion_host is defined and bastion_host != '' %}
+  -o ProxyCommand="{{ ansible_ssh_proxy_command }}"
+  {% endif %}

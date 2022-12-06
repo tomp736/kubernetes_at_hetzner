@@ -54,6 +54,21 @@ resource "hcloud_server_network" "kubernetes_subnet" {
 
 resource "local_file" "ansible_inventory" {
   content  = <<-EOT
+[bastion]
+%{for node in module.hetzner_nodes~}
+%{if node.nodetype == "bastion"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
+%{~endfor~}
+
+[node:children]
+master
+worker
+haproxy
+
+[node:vars]
+%{for node in module.hetzner_nodes~}
+%{if node.nodetype == "bastion"}bastion_host=${node.ipv4_address}%{endif}
+%{~endfor~}
+
 [master]
 %{for node in module.hetzner_nodes~}
 %{if node.nodetype == "master"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
@@ -68,11 +83,14 @@ resource "local_file" "ansible_inventory" {
 %{for node in module.hetzner_nodes~}
 %{if node.nodetype == "haproxy"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor~}
-
-[bastion]
-%{for node in module.hetzner_nodes~}
-%{if node.nodetype == "bastion"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
-%{~endfor~}
   EOT
   filename = "ansible/inventory/hosts"
+}
+
+resource "local_file" "ansible_host_vars" {
+  for_each = { for node in local.nodes : node.id => node if node.hetzner != null && node.hetzner.nodetype == "bastion" }  
+  content  = <<-EOT
+bastion_host: ""
+  EOT
+  filename = "ansible/host_vars/${node.name}/ansible_ssh.yml"
 }
