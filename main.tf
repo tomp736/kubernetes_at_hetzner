@@ -99,7 +99,7 @@ haproxy
 
 [node:vars]
 %{for node in module.nodes~}
-%{if node.nodetype == "bastion"}bastion_host=${node.name}%{endif}
+%{if node.nodetype == "bastion"}ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadmin@${node.ipv4_address} -o Port=2222 -o ForwardAgent=yes -o ControlMaster=auto -o ControlPersist=30m -W %h:%p"'%{endif~}
 %{~endfor}
 
 [master]
@@ -118,12 +118,4 @@ haproxy
 %{~endfor}
   EOT
   filename = "ansible/inventory/hosts"
-}
-
-resource "local_file" "ansible_host_vars" {
-  for_each = local.bastion_nodes
-  content  = <<-EOT
-bastion_host: ""
-  EOT
-  filename = "ansible/host_vars/${each.value.name}/ansible_ssh.yml"
 }
