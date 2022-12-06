@@ -57,7 +57,7 @@ resource "local_file" "ansible_inventory" {
 [bastion]
 %{for node in module.hetzner_nodes~}
 %{if node.nodetype == "bastion"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
-%{~endfor~}
+%{~endfor}
 
 [node:children]
 master
@@ -66,23 +66,23 @@ haproxy
 
 [node:vars]
 %{for node in module.hetzner_nodes~}
-%{if node.nodetype == "bastion"}bastion_host=${node.ipv4_address}%{endif}
-%{~endfor~}
+%{if node.nodetype == "bastion"}bastion_host=${node.name}%{endif}
+%{~endfor}
 
 [master]
 %{for node in module.hetzner_nodes~}
-%{if node.nodetype == "master"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
-%{~endfor~}
+%{if node.nodetype == "master"}${~node.name} ansible_host=${hcloud_server_network.kubernetes_subnet[node.name].ip}%{endif}
+%{~endfor}
 
 [worker]
 %{for node in module.hetzner_nodes~}
-%{if node.nodetype == "worker"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
-%{~endfor~}
+%{if node.nodetype == "worker"}${~node.name} ansible_host=${hcloud_server_network.kubernetes_subnet[node.name].ip}%{endif}
+%{~endfor}
 
 [haproxy]
 %{for node in module.hetzner_nodes~}
-%{if node.nodetype == "haproxy"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
-%{~endfor~}
+%{if node.nodetype == "haproxy"}${~node.name} ansible_host=${hcloud_server_network.kubernetes_subnet[node.name].ip}%{endif}
+%{~endfor}
   EOT
   filename = "ansible/inventory/hosts"
 }
