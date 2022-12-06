@@ -22,5 +22,5 @@ locals {
         }
       ]
     ]
-  ) : format("%s_%s", net.network_net.node) => net }
+  ) : format("%s_%s", net.network, net.node) => net }
 }
