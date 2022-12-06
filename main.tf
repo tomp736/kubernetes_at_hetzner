@@ -1,21 +1,21 @@
 # ./main.tf
 
-module "hetzner_network" {
-  for_each = { for network in local.networks : network.id => network if network.hetzner != null }  
+module "networks" {
+  for_each = local.all_networks
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/network?ref=main"
 
 
-  network_name          = each.value.hetzner.name
-  network_ip_range      = each.value.hetzner.ip_range
-  network_subnet_ranges = each.value.hetzner.subnet_ranges
+  network_name          = each.value.name
+  network_ip_range      = each.value.ip_range
+  network_subnet_ranges = each.value.subnet_ranges
 }
 
-module "cloud-init" {
-  for_each = { for node in local.nodes : node.id => node if node.hetzner != null }
+module "cloud_init_configs" {
+  for_each = local.all_nodes
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/cloud-init?ref=main"
 
   general = {
-    hostname                   = each.value.hetzner.name
+    hostname                   = each.value.name
     package_reboot_if_required = true
     package_update             = true
     package_upgrade            = true
@@ -37,25 +37,58 @@ module "cloud-init" {
   ]
 }
 
-module "hetzner_nodes" {
-  for_each = { for node in local.nodes : node.id => node if node.hetzner != null }
-  source               = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node?ref=main"
+module "nodes" {
+  for_each = local.all_nodes
+  source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node?ref=main"
 
-  node_config          = each.value.hetzner
-  cloud_init_user_data = module.cloud-init[each.key].user_data
+  node_config = each.value
+  network_ids = [
+    module.networks["default"].hetzner_network.id
+  ]
+  cloud_init_user_data = module.cloud_init_configs[each.key].user_data
 }
 
-resource "hcloud_server_network" "kubernetes_subnet" {
-  for_each = { for node in local.nodes : node.id => node }
+resource "hcloud_server_network" "networks" {
+  for_each = local.node_networks
 
-  server_id = module.hetzner_nodes[each.key].id
-  subnet_id = values(module.hetzner_network)[0].hetzner_subnets["10.98.0.0/24"].id
+  server_id = module.nodes[each.value.node].id
+  subnet_id = values(module.networks[each.value.network].hetzner_subnets)[0].id
+}
+
+resource "null_resource" "test_connection" {
+  for_each = local.all_nodes
+
+  depends_on = [
+    module.nodes
+  ]
+
+  connection {
+    host         = hcloud_server_network.networks[format("%s%s", each.value.id, "bnet")].ip
+    bastion_host = module.nodes[values(local.bastion_nodes)[0].id].ipv4_address
+    agent        = true
+    user         = "sysadmin"
+    port         = "2222"
+    type         = "ssh"
+    timeout      = "5m"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 60 && cloud-init status --wait"
+    ]
+    on_failure = continue
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "cloud-init status --wait"
+    ]
+    on_failure = continue
+  }
 }
 
 resource "local_file" "ansible_inventory" {
   content  = <<-EOT
 [bastion]
-%{for node in module.hetzner_nodes~}
+%{for node in module.nodes~}
 %{if node.nodetype == "bastion"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
 %{~endfor}
 
@@ -65,32 +98,32 @@ worker
 haproxy
 
 [node:vars]
-%{for node in module.hetzner_nodes~}
+%{for node in module.nodes~}
 %{if node.nodetype == "bastion"}bastion_host=${node.name}%{endif}
 %{~endfor}
 
 [master]
-%{for node in module.hetzner_nodes~}
-%{if node.nodetype == "master"}${~node.name} ansible_host=${hcloud_server_network.kubernetes_subnet[node.name].ip}%{endif}
+%{for node in module.nodes~}
+%{if node.nodetype == "master"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s%s", node.name, "bnet")].ip}%{endif}
 %{~endfor}
 
 [worker]
-%{for node in module.hetzner_nodes~}
-%{if node.nodetype == "worker"}${~node.name} ansible_host=${hcloud_server_network.kubernetes_subnet[node.name].ip}%{endif}
+%{for node in module.nodes~}
+%{if node.nodetype == "worker"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s%s", node.name, "bnet")].ip}%{endif}
 %{~endfor}
 
 [haproxy]
-%{for node in module.hetzner_nodes~}
-%{if node.nodetype == "haproxy"}${~node.name} ansible_host=${hcloud_server_network.kubernetes_subnet[node.name].ip}%{endif}
+%{for node in module.nodes~}
+%{if node.nodetype == "haproxy"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s%s", node.name, "bnet")].ip}%{endif}
 %{~endfor}
   EOT
   filename = "ansible/inventory/hosts"
 }
 
 resource "local_file" "ansible_host_vars" {
-  for_each = { for node in local.nodes : node.id => node if node.hetzner != null && node.hetzner.nodetype == "bastion" }  
+  for_each = local.bastion_nodes
   content  = <<-EOT
 bastion_host: ""
   EOT
-  filename = "ansible/host_vars/${each.value.hetzner.name}/ansible_ssh.yml"
+  filename = "ansible/host_vars/${each.value.name}/ansible_ssh.yml"
 }
