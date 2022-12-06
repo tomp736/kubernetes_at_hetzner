@@ -63,7 +63,7 @@ resource "null_resource" "test_connection" {
   ]
 
   connection {
-    host         = hcloud_server_network.networks[format("%s_%s", each.value.id, "bnet")].ip
+    host         = hcloud_server_network.networks[format("%s_%s", "bnet", each.value.id)].ip
     bastion_host = module.nodes[values(local.bastion_nodes)[0].id].ipv4_address
     agent        = true
     user         = "sysadmin"
