@@ -104,17 +104,17 @@ haproxy
 
 [master]
 %{for node in module.nodes~}
-%{if node.nodetype == "master"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s%s", node.name, "bnet")].ip}%{endif}
+%{if node.nodetype == "master"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}%{endif}
 %{~endfor}
 
 [worker]
 %{for node in module.nodes~}
-%{if node.nodetype == "worker"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s%s", node.name, "bnet")].ip}%{endif}
+%{if node.nodetype == "worker"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}%{endif}
 %{~endfor}
 
 [haproxy]
 %{for node in module.nodes~}
-%{if node.nodetype == "haproxy"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s%s", node.name, "bnet")].ip}%{endif}
+%{if node.nodetype == "haproxy"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}%{endif}
 %{~endfor}
   EOT
   filename = "ansible/inventory/hosts"
