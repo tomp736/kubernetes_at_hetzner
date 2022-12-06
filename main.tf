@@ -92,5 +92,5 @@ resource "local_file" "ansible_host_vars" {
   content  = <<-EOT
 bastion_host: ""
   EOT
-  filename = "ansible/host_vars/${module.hetzner_nodes[each.key].hetzner.name}/ansible_ssh.yml"
+  filename = "ansible/host_vars/${module.hetzner_nodes[each.key].name}/ansible_ssh.yml"
 }
