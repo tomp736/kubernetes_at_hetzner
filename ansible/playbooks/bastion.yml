@@ -19,6 +19,6 @@
       - name: Apply DevSec SSH Hardening
         ansible.builtin.import_role:
           name: devsec.hardening.ssh_hardening
-      - name: Apply DevSec OS Hardening
-        ansible.builtin.import_role:
-          name: devsec.hardening.os_hardening
+      # - name: Apply DevSec OS Hardening
+      #   ansible.builtin.import_role:
+      #     name: devsec.hardening.os_hardening
