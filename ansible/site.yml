@@ -9,4 +9,5 @@
 - import_playbook: playbooks/k8s_worker.yml
 
 - import_playbook: playbooks/haproxy.yml
+
 - import_playbook: playbooks/fluxcd.yml
