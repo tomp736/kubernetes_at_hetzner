@@ -38,10 +38,6 @@ jobs:
         echo "Create config.remote.tfbackend"
         sed -i 's|local|remote|g' providers.tf
     - 
-      name: Update prefix for resources.
-      run: |
-        sed -i 's|{prefix}|c0|g' files/config.json
-    - 
       name: Update Terraform Ref
       run: |
         sed -i 's|modules-terraform.git//modules/cloud-init?ref=main|modules-terraform.git//modules/cloud-init?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
