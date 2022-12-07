@@ -117,5 +117,5 @@ ${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bne
 ${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}
 %{~endfor}
   EOT
-  filename = "ansible/inventory/hosts"
+  filename = "ansible_hosts"
 }

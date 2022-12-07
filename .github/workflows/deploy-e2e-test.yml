@@ -29,7 +29,7 @@ jobs:
   destroy_with_head_refs_top:
     uses: ./.github/workflows/workspace-destroy.yml
     with:
-      ENVIRONMENT: ${{ github.actor }}-${{ github.head_ref || 'dev' }}
+      ENVIRONMENT: ${{ github.actor }}-${{ github.head_ref || github.ref_name }}
       TF_MODULES_REF: ${{ github.head_ref || 'dev' }}
     secrets: inherit
 
@@ -37,7 +37,7 @@ jobs:
     needs: destroy_with_head_refs_top
     uses: ./.github/workflows/workspace-deploy.yml
     with:
-      ENVIRONMENT: ${{ github.actor }}-${{ github.head_ref || 'dev' }}
+      ENVIRONMENT: ${{ github.actor }}-${{ github.head_ref || github.ref_name }}
       TF_MODULES_REF: ${{ github.head_ref || 'dev' }}
       ANSIBLE_MODULES_REF: ${{ github.head_ref || 'dev' }}
       FLUX_WORKSPACE: ${{ github.head_ref || 'dev' }}
@@ -50,7 +50,7 @@ jobs:
     needs: deploy_with_head_refs
     uses: ./.github/workflows/workspace-destroy.yml
     with:
-      ENVIRONMENT: ${{ github.actor }}-${{ github.head_ref || 'dev' }}
+      ENVIRONMENT: ${{ github.actor }}-${{ github.head_ref || github.ref_name }}
       TF_MODULES_REF: ${{ github.head_ref || 'dev' }}
     secrets: inherit  
 
@@ -58,7 +58,7 @@ jobs:
     needs: destroy_with_head_refs
     uses: ./.github/workflows/workspace-deploy.yml
     with:
-      ENVIRONMENT: ${{ github.actor }}-${{ github.head_ref || 'dev' }}
+      ENVIRONMENT: ${{ github.actor }}-${{ github.head_ref || github.ref_name }}
       TF_MODULES_REF: ${{ github.base_ref || 'dev' }}
       ANSIBLE_MODULES_REF: ${{ github.base_ref || 'dev' }}
       FLUX_WORKSPACE: ${{ github.base_ref || 'dev' }}
@@ -71,6 +71,6 @@ jobs:
     needs: deploy_with_base_refs
     uses: ./.github/workflows/workspace-destroy.yml
     with:
-      ENVIRONMENT: ${{ github.actor }}-${{ github.head_ref || 'dev' }}
+      ENVIRONMENT: ${{ github.actor }}-${{ github.head_ref || github.ref_name }}
       TF_MODULES_REF: ${{ github.base_ref || 'dev' }}
     secrets: inherit
