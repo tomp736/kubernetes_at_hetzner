@@ -18,41 +18,38 @@ jobs:
     - 
       name: Create default.tfvars file
       run: |
-        echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" > default.tfvars
-        echo "public_key = \"xxx\"" >> default.tfvars
+        echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" > terraform/default.tfvars
+        echo "public_key = \"xxx\"" >> terraform/default.tfvars
     - 
       name: Apply changes for remote backend
       run: |
         echo "Create default.tfrc file"
-        echo "# default.tfrc" > default.tfrc
-        echo "credentials \"app.terraform.io\" {" >> default.tfrc
-        echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> default.tfrc
-        echo "}" >> default.tfrc
+        echo "# default.tfrc" > terraform/default.tfrc
+        echo "credentials \"app.terraform.io\" {" >> terraform/default.tfrc
+        echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> terraform/default.tfrc
+        echo "}" >> terraform/default.tfrc
 
         echo "Create config.remote.tfbackend"
-        echo "# config.remote.tfbackend" > config.remote.tfbackend
-        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.ENVIRONMENT }}\" }" >> config.remote.tfbackend
-        echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
-        echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
+        echo "# config.remote.tfbackend" > terraform/config.remote.tfbackend
+        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.ENVIRONMENT }}\" }" >> terraform/config.remote.tfbackend
+        echo "hostname     = \"app.terraform.io\"" >> terraform/config.remote.tfbackend
+        echo "organization = \"labrats-work\"" >> terraform/config.remote.tfbackend 
 
         echo "Create config.remote.tfbackend"
         sed -i 's|local|remote|g' providers.tf
     - 
-      name: Update prefix for resources.
-      run: |
-        sed -i 's|{prefix}|${{ inputs.ENVIRONMENT }}|g' files/config.json
-    - 
       name: Update Terraform Ref
       run: |
-        sed -i 's|modules-terraform.git//modules/cloud-init?ref=main|modules-terraform.git//modules/cloud-init?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
-        sed -i 's|modules-terraform.git//modules/hetzner/network?ref=main|modules-terraform.git//modules/hetzner/network?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
-        sed -i 's|modules-terraform.git//modules/hetzner/node?ref=main|modules-terraform.git//modules/hetzner/node?ref=${{ inputs.TF_MODULES_REF }}|g' main.tf
+        sed -i 's|modules-terraform.git//modules/cloud-init?ref=main|modules-terraform.git//modules/cloud-init?ref=${{ inputs.TF_MODULES_REF }}|g' terraform/main.tf
+        sed -i 's|modules-terraform.git//modules/hetzner/network?ref=main|modules-terraform.git//modules/hetzner/network?ref=${{ inputs.TF_MODULES_REF }}|g' terraform/main.tf
+        sed -i 's|modules-terraform.git//modules/hetzner/node?ref=main|modules-terraform.git//modules/hetzner/node?ref=${{ inputs.TF_MODULES_REF }}|g' terraform/main.tf
     - 
       id: destroy
       continue-on-error: true
       name: Terraform Destroy
       uses: labrats-work/action-terraform@main
       with:
+        chdir: terraform
         verb: destroy
         init: yes
         varsFile: default.tfvars
