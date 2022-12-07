@@ -10,8 +10,8 @@ jobs:
     name: 'Cleanup'
     runs-on: ubuntu-latest
     outputs:
-      cleanup: ${{ steps.cleanup_check.outputs.tomp736_dev }}
-      cleanup: ${{ steps.cleanup_check.outputs.tomp736_main }}
+      tomp736_dev: ${{ steps.cleanup_check.outputs.tomp736_dev }}
+      tomp736_main: ${{ steps.cleanup_check.outputs.tomp736_main }}
     steps:
       - name: Check if workspace last update was over 30 minutes ago.
         id: cleanup_check_tomp736_dev
