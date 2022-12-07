@@ -16,13 +16,12 @@ permissions:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/workspace-deploy.yml
     with:
-      TF_WORKSPACE: none
+      TF_WORKSPACE: ${{ github.actor }}_${{ github.base_ref || 'dev' }}
       TF_MODULES_REF: ${{ github.base_ref || 'dev' }}
       ANSIBLE_MODULES_REF: ${{ github.base_ref || 'dev' }}
       FLUX_WORKSPACE: ${{ github.base_ref || 'dev' }}
       TERRAFORM_APPLY: true
       ANSIBLE_APPLY: true
-      LIFETIME: 1m
     secrets: inherit  
