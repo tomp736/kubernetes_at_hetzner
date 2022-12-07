@@ -1,6 +1,8 @@
 name: 'Deploy E2E Test'
 
 on:
+  schedule:
+    - cron:  '0 * * * *'
   workflow_dispatch:
     inputs:
       TERRAFORM_APPLY:
