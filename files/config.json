@@ -38,8 +38,6 @@
             "server_type": "cx21",
             "nodetype": "master",
             "network_zone": "eu-central",
-            "ipv4_enabled": false,
-            "ipv6_enabled": false,
             "ssh_user": "sysadmin",
             "ssh_port": "2222"
         },
@@ -55,8 +53,6 @@
             "server_type": "cx21",
             "nodetype": "worker",
             "network_zone": "eu-central",
-            "ipv4_enabled": false,
-            "ipv6_enabled": false,
             "ssh_user": "sysadmin",
             "ssh_port": "2222"
         },
