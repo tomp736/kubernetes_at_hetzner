@@ -30,10 +30,10 @@ jobs:
         echo "}" >> terraform/default.tfrc
 
         echo "Create config.remote.tfbackend"
-        echo "# config.remote.tfbackend" > terraform/config.remote.tfbackend
-        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.ENVIRONMENT }}\" }" >> terraform/config.remote.tfbackend
-        echo "hostname     = \"app.terraform.io\"" >> terraform/config.remote.tfbackend
-        echo "organization = \"labrats-work\"" >> terraform/config.remote.tfbackend 
+        echo "# config.remote.tfbackend" > config.remote.tfbackend
+        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.ENVIRONMENT }}\" }" >> config.remote.tfbackend
+        echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
+        echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
 
         echo "Create config.remote.tfbackend"
         sed -i 's|local|remote|g' terraform/providers.tf
@@ -53,7 +53,7 @@ jobs:
         verb: destroy
         init: yes
         varsFile: default.tfvars
-        backendConfigFile: terraform/config.remote.tfbackend
+        backendConfigFile: config.remote.tfbackend
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
         KEYFILE: ${{ secrets.SSH_KEY }}
