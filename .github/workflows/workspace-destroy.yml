@@ -7,9 +7,9 @@ jobs:
   deploy:
     name: 'Destroy'
     runs-on: ubuntu-latest
-    environment: ${{ inputs.TF_WORKSPACE }}
+    environment: ${{ inputs.ENVIRONMENT }}
     concurrency: 
-      group: ${{ inputs.TF_WORKSPACE }}
+      group: ${{ inputs.ENVIRONMENT }}
       cancel-in-progress: false      
     steps:
     - 
@@ -31,7 +31,7 @@ jobs:
 
         echo "Create config.remote.tfbackend"
         echo "# config.remote.tfbackend" > config.remote.tfbackend
-        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.TF_WORKSPACE }}\" }" >> config.remote.tfbackend
+        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.ENVIRONMENT }}\" }" >> config.remote.tfbackend
         echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
         echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
 
@@ -40,7 +40,7 @@ jobs:
     - 
       name: Update prefix for resources.
       run: |
-        sed -i 's|{prefix}|${{ inputs.TF_WORKSPACE }}|g' files/config.json
+        sed -i 's|{prefix}|${{ inputs.ENVIRONMENT }}|g' files/config.json
     - 
       name: Update Terraform Ref
       run: |
