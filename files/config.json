@@ -27,12 +27,12 @@
     ],
     "nodes": [
         {
-            "id": "{prefix}-m0",
+            "id": "test-m0",
             "networks": [
                 "bnet",
                 "knet"
             ],
-            "name": "{prefix}-m0",
+            "name": "test-m0",
             "location": "nbg1",
             "image": "ubuntu-22.04",
             "server_type": "cx21",
@@ -44,12 +44,12 @@
             "ssh_port": "2222"
         },
         {
-            "id": "{prefix}-w0",
+            "id": "test-w0",
             "networks": [
                 "bnet",
                 "knet"
             ],
-            "name": "{prefix}-w0",
+            "name": "test-w0",
             "location": "nbg1",
             "image": "ubuntu-22.04",
             "server_type": "cx21",
@@ -61,12 +61,12 @@
             "ssh_port": "2222"
         },
         {
-            "id": "{prefix}-p0",
+            "id": "test-p0",
             "networks": [
                 "bnet",
                 "knet"
             ],
-            "name": "{prefix}-p0",
+            "name": "test-p0",
             "location": "nbg1",
             "image": "ubuntu-22.04",
             "server_type": "cx21",
@@ -76,11 +76,11 @@
             "ssh_port": "2222"
         },
         {
-            "id": "{prefix}-b0",
+            "id": "test-b0",
             "networks": [
                 "bnet"
             ],
-            "name": "{prefix}-b0",
+            "name": "test-b0",
             "location": "nbg1",
             "image": "ubuntu-22.04",
             "server_type": "cx11",

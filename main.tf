@@ -88,8 +88,8 @@ resource "null_resource" "test_connection" {
 resource "local_file" "ansible_inventory" {
   content  = <<-EOT
 [bastion]
-%{for node in module.nodes~}
-%{if node.nodetype == "bastion"}${~node.name} ansible_host=${node.ipv4_address}%{endif}
+%{for node in local.bastion_nodes~}
+${~node.name} ansible_host=${module.nodes[node.id].ipv4_address}
 %{~endfor}
 
 [node:children]
@@ -98,23 +98,23 @@ worker
 haproxy
 
 [node:vars]
-%{for node in module.nodes~}
-%{if node.nodetype == "bastion"}ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadmin@${node.ipv4_address} -o Port=2222 -o ForwardAgent=yes -o ControlMaster=auto -o ControlPersist=30m -W %h:%p"'%{endif~}
+%{for node in local.bastion_nodes~}
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadmin@${module.nodes[node.id].ipv4_address} -o Port=2222 -o ForwardAgent=yes -o ControlMaster=auto -o ControlPersist=30m -W %h:%p"'
 %{~endfor}
 
 [master]
-%{for node in module.nodes~}
-%{if node.nodetype == "master"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}%{endif}
+%{for node in local.master_nodes~}
+${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}
 %{~endfor}
 
 [worker]
-%{for node in module.nodes~}
-%{if node.nodetype == "worker"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}%{endif}
+%{for node in local.worker_nodes~}
+${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}
 %{~endfor}
 
 [haproxy]
-%{for node in module.nodes~}
-%{if node.nodetype == "haproxy"}${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}%{endif}
+%{for node in local.haproxy_nodes~}
+${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}
 %{~endfor}
   EOT
   filename = "ansible/inventory/hosts"
