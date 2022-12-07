@@ -41,7 +41,7 @@ jobs:
     - 
       name: Update prefix for resources.
       run: |
-        sed -i 's|{prefix}|${{ inputs.TF_WORKSPACE }}|g' files/config.json
+        sed -i 's|{prefix}|c0|g' files/config.json
     - 
       name: Update Terraform Ref
       run: |

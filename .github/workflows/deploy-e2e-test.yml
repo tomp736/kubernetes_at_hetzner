@@ -23,5 +23,6 @@ jobs:
       ANSIBLE_MODULES_REF: ${{ github.base_ref || 'dev' }}
       FLUX_WORKSPACE: ${{ github.base_ref || 'dev' }}
       TERRAFORM_APPLY: true
+      PUBLIC_KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJfG+Q279TtMZcYGoyF5Z3TRuQlGc3QtGP4r7M3A7Hh u0@prt-dev-01"
       ANSIBLE_APPLY: true
     secrets: inherit  
