@@ -48,22 +48,22 @@ jobs:
             echo 'tomp736_main=0' >> $GITHUB_OUTPUT
           fi
           
-  cleanup_run:
+  cleanup_tomp736_dev:
     if: needs.cleanup_check.outputs.tomp736_dev == '1'
     needs: cleanup_check
     uses: ./.github/workflows/workspace-destroy.yml
     with:
       TF_WORKSPACE: tomp736_dev
-      TF_MODULES_REF: ${{ github.base_ref || 'dev' }}
+      TF_MODULES_REF: 'dev'
       PUBLIC_KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJfG+Q279TtMZcYGoyF5Z3TRuQlGc3QtGP4r7M3A7Hh u0@prt-dev-01"
     secrets: inherit  
           
-  cleanup_run:
+  cleanup_tomp736_main:
     if: needs.cleanup_check.outputs.tomp736_main == '1'
     needs: cleanup_check
     uses: ./.github/workflows/workspace-destroy.yml
     with:
       TF_WORKSPACE: tomp736_main
-      TF_MODULES_REF: ${{ github.base_ref || 'dev' }}
+      TF_MODULES_REF: 'main'
       PUBLIC_KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJfG+Q279TtMZcYGoyF5Z3TRuQlGc3QtGP4r7M3A7Hh u0@prt-dev-01"
     secrets: inherit  
