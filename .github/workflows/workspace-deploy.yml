@@ -36,7 +36,7 @@ jobs:
         echo "organization = \"labrats-work\"" >> terraform/config.remote.tfbackend 
 
         echo "Create config.remote.tfbackend"
-        sed -i 's|local|remote|g' providers.tf
+        sed -i 's|local|remote|g' terraform/providers.tf
     - 
       name: Update Terraform Ref
       run: |
