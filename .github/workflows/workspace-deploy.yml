@@ -56,7 +56,7 @@ jobs:
         init: yes
         varsFile: default.tfvars
         planFile: tfplan
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: terraform/config.remote.tfbackend
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
         KEYFILE: ${{ secrets.SSH_KEY }}
@@ -69,7 +69,7 @@ jobs:
         verb: apply
         init: yes
         planFile: tfplan
-        backendConfigFile: config.remote.tfbackend
+        backendConfigFile: terraform/config.remote.tfbackend
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
         KEYFILE: ${{ secrets.SSH_KEY }}
