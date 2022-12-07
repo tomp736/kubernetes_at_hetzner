@@ -1,0 +1,89 @@
+{
+    "networks": [
+        {
+            "id": "default",
+            "name": "default",
+            "ip_range": "10.97.0.0/16",
+            "subnet_ranges": [
+                "10.97.0.0/16"
+            ]
+        },
+        {
+            "id": "bnet",
+            "name": "bnet",
+            "ip_range": "10.98.0.0/16",
+            "subnet_ranges": [
+                "10.98.0.0/24"
+            ]
+        },
+        {
+            "id": "knet",
+            "name": "knet",
+            "ip_range": "10.99.0.0/16",
+            "subnet_ranges": [
+                "10.99.0.0/24"
+            ]
+        }
+    ],
+    "nodes": [
+        {
+            "id": "c0m0",
+            "networks": [
+                "bnet",
+                "knet"
+            ],
+            "name": "c0m0",
+            "location": "nbg1",
+            "image": "ubuntu-22.04",
+            "server_type": "cx21",
+            "nodetype": "master",
+            "network_zone": "eu-central",
+            "ssh_user": "sysadmin",
+            "ssh_port": "2222"
+        },
+        {
+            "id": "c0w0",
+            "networks": [
+                "bnet",
+                "knet"
+            ],
+            "name": "c0w0",
+            "location": "nbg1",
+            "image": "ubuntu-22.04",
+            "server_type": "cx21",
+            "nodetype": "worker",
+            "network_zone": "eu-central",
+            "ssh_user": "sysadmin",
+            "ssh_port": "2222"
+        },
+        {
+            "id": "c0p0",
+            "networks": [
+                "bnet",
+                "knet"
+            ],
+            "name": "c0p0",
+            "location": "nbg1",
+            "image": "ubuntu-22.04",
+            "server_type": "cx21",
+            "nodetype": "haproxy",
+            "network_zone": "eu-central",
+            "ssh_user": "sysadmin",
+            "ssh_port": "2222"
+        },
+        {
+            "id": "c0b0",
+            "networks": [
+                "bnet"
+            ],
+            "name": "c0b0",
+            "location": "nbg1",
+            "image": "ubuntu-22.04",
+            "server_type": "cx11",
+            "nodetype": "bastion",
+            "network_zone": "eu-central",
+            "ssh_user": "sysadmin",
+            "ssh_port": "2222"
+        }
+    ]
+}
