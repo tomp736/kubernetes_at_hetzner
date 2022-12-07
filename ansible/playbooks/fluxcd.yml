@@ -15,3 +15,4 @@
         flux_init_repo: "{{ lookup('ansible.builtin.env','FLUX_INIT_REPO') }}"
         flux_init_path: "{{ lookup('ansible.builtin.env','FLUX_INIT_PATH') }}"
         flux_init_token: "{{ lookup('ansible.builtin.env','FLUX_INIT_TOKEN') }}"
+      timeout: 5
