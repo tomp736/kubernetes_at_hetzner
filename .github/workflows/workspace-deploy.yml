@@ -74,6 +74,11 @@ jobs:
         TF_CLI_CONFIG_FILE: default.tfrc
         KEYFILE: ${{ secrets.SSH_KEY }}
     - 
+      name: Copy Ansible Hosts
+      if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
+      run: |
+        cp terraform/ansible_hosts ansible/inventory/hosts
+    - 
       if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
       name: Run playbook
       uses: labrats-work/action-ansible@main
