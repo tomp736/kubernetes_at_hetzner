@@ -7,9 +7,9 @@ jobs:
   deploy:
     name: 'Deploy'
     runs-on: ubuntu-latest
-    environment: ${{ inputs.TF_WORKSPACE }}
+    environment: ${{ inputs.ENVIRONMENT }}
     concurrency: 
-      group: ${{ inputs.TF_WORKSPACE }}
+      group: ${{ inputs.ENVIRONMENT }}
       cancel-in-progress: false      
     steps:
     - 
@@ -21,7 +21,6 @@ jobs:
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" > default.tfvars
         echo "public_key = \"${{ inputs.PUBLIC_KEY }}\"" >> default.tfvars
     - 
-      if: inputs.TF_WORKSPACE != 'none'
       name: Apply changes for remote backend
       run: |
         echo "Create default.tfrc file"
@@ -32,7 +31,7 @@ jobs:
 
         echo "Create config.remote.tfbackend"
         echo "# config.remote.tfbackend" > config.remote.tfbackend
-        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.TF_WORKSPACE }}\" }" >> config.remote.tfbackend
+        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.ENVIRONMENT }}\" }" >> config.remote.tfbackend
         echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
         echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
 
@@ -93,7 +92,7 @@ jobs:
 on:
   workflow_call:
     inputs:
-      TF_WORKSPACE:
+      ENVIRONMENT:
         type: string
         description: Terraform Remote Workspace
         required: true
@@ -113,50 +112,6 @@ on:
         type: string
         description: Public key to add to servers.
         required: true
-      TERRAFORM_APPLY:
-        type: boolean
-        description: Apply Terraform
-        required: true
-        default: false
-      ANSIBLE_APPLY:
-        type: boolean
-        description: Apply Ansible
-        required: true
-        default: false
-  workflow_dispatch:
-    inputs:
-      TF_WORKSPACE:
-        type: choice
-        description: Terraform Remote Workspace
-        required: true
-        options:
-        - tomp736
-      TF_MODULES_REF:
-        type: choice
-        description: Terraform Modules Ref
-        required: true
-        options:
-        - main
-        - dev
-      ANSIBLE_MODULES_REF:
-        type: choice
-        description: Ansible Modules Ref
-        required: true
-        options:
-        - main
-        - dev
-      FLUX_WORKSPACE:
-        type: choice
-        description: Flux Workspace
-        required: true
-        options:
-        - tomp736
-      PUBLIC_KEY:
-        type: choice
-        description: Public key to add to servers.
-        required: true
-        options:
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJfG+Q279TtMZcYGoyF5Z3TRuQlGc3QtGP4r7M3A7Hh u0@prt-dev-01
       TERRAFORM_APPLY:
         type: boolean
         description: Apply Terraform

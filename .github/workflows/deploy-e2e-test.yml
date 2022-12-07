@@ -2,6 +2,17 @@ name: 'Deploy E2E Test'
 
 on:
   workflow_dispatch:
+    inputs:
+      TERRAFORM_APPLY:
+        type: boolean
+        description: Apply Terraform
+        required: true
+        default: true
+      ANSIBLE_APPLY:
+        type: boolean
+        description: Apply Ansible
+        required: true
+        default: true
   pull_request:
     branches:    
       - main  
@@ -18,11 +29,11 @@ jobs:
   deploy:
     uses: ./.github/workflows/workspace-deploy.yml
     with:
-      TF_WORKSPACE: ${{ github.actor }}_${{ github.base_ref || 'dev' }}
+      ENVIRONMENT: ${{ github.actor }}-${{ github.base_ref || 'dev' }}
       TF_MODULES_REF: ${{ github.base_ref || 'dev' }}
       ANSIBLE_MODULES_REF: ${{ github.base_ref || 'dev' }}
       FLUX_WORKSPACE: ${{ github.base_ref || 'dev' }}
-      TERRAFORM_APPLY: true
+      TERRAFORM_APPLY: ${{ inputs.TERRAFORM_APPLY || true }}
+      ANSIBLE_APPLY: ${{ inputs.ANSIBLE_APPLY || true }}
       PUBLIC_KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJfG+Q279TtMZcYGoyF5Z3TRuQlGc3QtGP4r7M3A7Hh u0@prt-dev-01"
-      ANSIBLE_APPLY: true
     secrets: inherit  

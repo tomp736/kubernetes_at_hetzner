@@ -10,15 +10,15 @@ jobs:
     name: 'Cleanup'
     runs-on: ubuntu-latest
     outputs:
-      cleanup: ${{ steps.cleanup_check.outputs.tomp736_dev }}
-      cleanup: ${{ steps.cleanup_check.outputs.tomp736_main }}
+      tomp736-dev: ${{ steps.cleanup_check.outputs.tomp736-dev }}
+      tomp736-main: ${{ steps.cleanup_check.outputs.tomp736-main }}
     steps:
       - name: Check if workspace last update was over 30 minutes ago.
-        id: cleanup_check_tomp736_dev
+        id: cleanup_check_tomp736-dev
         run: |
           curl \
           -H "Accept: application/vnd.github+json" \
-          https://api.github.com/repos/tomp736/kubernetes_at_hetzner/deployments?environment=tomp736_dev > deployments.json
+          https://api.github.com/repos/tomp736/kubernetes_at_hetzner/deployments?environment=tomp736-dev > deployments.json
 
           DATE_DEP=$(jq -r '.[].updated_at' deployments.json | sort -r | head -n 1)
           DATE_EXP=$(date -d "$DATE_DEP + 30 minutes" +%s)
@@ -26,16 +26,16 @@ jobs:
 
           if [ $DATE_EXP -le $DATE_NOW ]
           then 
-            echo 'tomp736_dev=1' >> $GITHUB_OUTPUT
+            echo 'tomp736-dev=1' >> $GITHUB_OUTPUT
           else
-            echo 'tomp736_dev=0' >> $GITHUB_OUTPUT
+            echo 'tomp736-dev=0' >> $GITHUB_OUTPUT
           fi
       - name: Check if workspace last update was over 30 minutes ago.
-        id: cleanup_check_tomp736_main
+        id: cleanup_check_tomp736-main
         run: |
           curl \
           -H "Accept: application/vnd.github+json" \
-          https://api.github.com/repos/tomp736/kubernetes_at_hetzner/deployments?environment=tomp736_main > deployments.json
+          https://api.github.com/repos/tomp736/kubernetes_at_hetzner/deployments?environment=tomp736-main > deployments.json
 
           DATE_DEP=$(jq -r '.[].updated_at' deployments.json | sort -r | head -n 1)
           DATE_EXP=$(date -d "$DATE_DEP + 30 minutes" +%s)
@@ -43,27 +43,25 @@ jobs:
 
           if [ $DATE_EXP -le $DATE_NOW ]
           then 
-            echo 'tomp736_main=1' >> $GITHUB_OUTPUT
+            echo 'tomp736-main=1' >> $GITHUB_OUTPUT
           else
-            echo 'tomp736_main=0' >> $GITHUB_OUTPUT
+            echo 'tomp736-main=0' >> $GITHUB_OUTPUT
           fi
           
-  cleanup_tomp736_dev:
-    if: needs.cleanup_check.outputs.tomp736_dev == '1'
+  cleanup_tomp736-dev:
+    if: needs.cleanup_check.outputs.tomp736-dev == '1'
     needs: cleanup_check
     uses: ./.github/workflows/workspace-destroy.yml
     with:
-      TF_WORKSPACE: tomp736_dev
+      TF_WORKSPACE: tomp736-dev
       TF_MODULES_REF: 'dev'
-      PUBLIC_KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJfG+Q279TtMZcYGoyF5Z3TRuQlGc3QtGP4r7M3A7Hh u0@prt-dev-01"
     secrets: inherit  
           
-  cleanup_tomp736_main:
-    if: needs.cleanup_check.outputs.tomp736_main == '1'
+  cleanup_tomp736-main:
+    if: needs.cleanup_check.outputs.tomp736-main == '1'
     needs: cleanup_check
     uses: ./.github/workflows/workspace-destroy.yml
     with:
-      TF_WORKSPACE: tomp736_main
+      TF_WORKSPACE: tomp736-main
       TF_MODULES_REF: 'main'
-      PUBLIC_KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJfG+Q279TtMZcYGoyF5Z3TRuQlGc3QtGP4r7M3A7Hh u0@prt-dev-01"
     secrets: inherit  
