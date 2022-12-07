@@ -24,16 +24,16 @@ jobs:
       name: Apply changes for remote backend
       run: |
         echo "Create default.tfrc file"
-        echo "# default.tfrc" > terraform/default.tfrc
-        echo "credentials \"app.terraform.io\" {" >> terraform/default.tfrc
-        echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> terraform/default.tfrc
-        echo "}" >> terraform/default.tfrc
+        echo "# default.tfrc" > default.tfrc
+        echo "credentials \"app.terraform.io\" {" >> default.tfrc
+        echo "  token = \"${{ secrets.TFCLOUD_TOKEN }}\"" >> default.tfrc
+        echo "}" >> default.tfrc
 
         echo "Create config.remote.tfbackend"
-        echo "# config.remote.tfbackend" > config.remote.tfbackend
-        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.ENVIRONMENT }}\" }" >> config.remote.tfbackend
-        echo "hostname     = \"app.terraform.io\"" >> config.remote.tfbackend
-        echo "organization = \"labrats-work\"" >> config.remote.tfbackend 
+        echo "# config.remote.tfbackend" > terraform/config.remote.tfbackend
+        echo "workspaces { name = \"kubernetes_at_hetzner_${{ inputs.ENVIRONMENT }}\" }" >> terraform/config.remote.tfbackend
+        echo "hostname     = \"app.terraform.io\"" >> terraform/config.remote.tfbackend
+        echo "organization = \"labrats-work\"" >> terraform/config.remote.tfbackend 
 
         echo "Create config.remote.tfbackend"
         sed -i 's|local|remote|g' terraform/providers.tf
