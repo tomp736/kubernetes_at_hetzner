@@ -46,7 +46,7 @@ jobs:
       PUBLIC_KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJfG+Q279TtMZcYGoyF5Z3TRuQlGc3QtGP4r7M3A7Hh u0@prt-dev-01"
     secrets: inherit
     
-  destroy_with_head_refs_bottom:
+  destroy_with_head_refs:
     needs: deploy_with_head_refs
     uses: ./.github/workflows/workspace-destroy.yml
     with:
@@ -55,7 +55,7 @@ jobs:
     secrets: inherit  
 
   deploy_with_base_refs:
-    needs: destroy_with_head_refs_top
+    needs: destroy_with_head_refs
     uses: ./.github/workflows/workspace-deploy.yml
     with:
       ENVIRONMENT: ${{ github.actor }}-${{ github.head_ref || 'dev' }}
