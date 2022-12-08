@@ -42,17 +42,21 @@ module "nodes" {
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node?ref=main"
 
   node_config = each.value
-  network_ids = [
-    module.networks["default"].hetzner_network.id
-  ]
+  networks = concat(
+    [
+      {
+        name = "default"
+        id   = module.networks["default"].hetzner_network.id
+      }
+    ],
+    [
+      for network in local.all_nodes[each.value.id].networks : {
+        name = network
+        id   = module.networks[network].hetzner_network.id
+      }
+    ]
+  )
   cloud_init_user_data = module.cloud_init_configs[each.key].user_data
-}
-
-resource "hcloud_server_network" "networks" {
-  for_each = local.node_networks
-
-  server_id = module.nodes[each.value.node].id
-  subnet_id = values(module.networks[each.value.network].hetzner_subnets)[0].id
 }
 
 resource "null_resource" "test_connection" {
@@ -63,7 +67,7 @@ resource "null_resource" "test_connection" {
   ]
 
   connection {
-    host         = hcloud_server_network.networks[format("%s_%s", "bnet", each.value.id)].ip
+    host         = module.nodes[each.value.id].networks[module.networks["bnet"].hetzner_network.id]
     bastion_host = module.nodes[values(local.bastion_nodes)[0].id].ipv4_address
     agent        = true
     user         = "sysadmin"
@@ -104,17 +108,17 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadm
 
 [master]
 %{for node in local.master_nodes~}
-${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}
+${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id]}
 %{~endfor}
 
 [worker]
 %{for node in local.worker_nodes~}
-${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}
+${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id]}
 %{~endfor}
 
 [haproxy]
 %{for node in local.haproxy_nodes~}
-${~node.name} ansible_host=${hcloud_server_network.networks[format("%s_%s", "bnet", node.name)].ip}
+${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id]}
 %{~endfor}
   EOT
   filename = "ansible_hosts"

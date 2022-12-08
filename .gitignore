@@ -3,5 +3,5 @@
 terraform.*
 *.tfvars
 
-ansible/inventory/**
+terraform/ansible_hosts
 !ansible/inventory/README.md

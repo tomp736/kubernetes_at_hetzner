@@ -1,4 +1,4 @@
-# providers.tf
+# ./providers.tf
 
 terraform {
   backend "local" {}
