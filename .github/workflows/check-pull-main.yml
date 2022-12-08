@@ -9,7 +9,7 @@ jobs:
   deploy_with_head_refs:
     uses: ./.github/workflows/workspace-deploy.yml
     with:
-      ENVIRONMENT: ${{ github.actor }}-${{ github.ref_name }}
+      ENVIRONMENT: ${{ github.actor }}-dev
       TF_MODULES_REF: main
       ANSIBLE_MODULES_REF: main
       FLUX_WORKSPACE: main
