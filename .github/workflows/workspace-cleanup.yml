@@ -48,6 +48,9 @@ jobs:
 
           echo $TODELETE
           echo "environments=$TODELETE" >> $GITHUB_OUTPUT
+      - id: debug
+        run: |
+          echo "Result: ${{ steps.cleanup_check.outputs.environments }}"
   cleanup:
     needs: cleanup_check
     uses: ./.github/workflows/workspace-destroy.yml
