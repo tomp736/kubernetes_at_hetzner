@@ -15,7 +15,7 @@ jobs:
       - name: Check if workspace last update was over 30 minutes ago.
         id: cleanup_environments_check
         run: |
-          sudo apt-get install -y jq
+          sudo apt-get install -y jq sponge
 
           curl \
           -H "Accept: application/vnd.github+json" \
