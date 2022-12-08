@@ -46,6 +46,7 @@ jobs:
 
           TODELETE=$(jq -rc '[.[].name]' envs.json)
 
+          echo $TODELETE
           echo "environments=$TODELETE" >> $GITHUB_OUTPUT
   cleanup:
     needs: cleanup_check
