@@ -42,17 +42,15 @@ module "nodes" {
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node?ref=main"
 
   node_config = each.value
-  network_ids = [
-    module.networks["default"].hetzner_network.id
-  ]
+  network_ids = concat(
+    [
+      module.networks["default"].hetzner_network.id
+    ],
+    [ 
+      for network in local.all_nodes[each.value.id].networks : module.networks[network].hetzner_network.id 
+    ]
+  )
   cloud_init_user_data = module.cloud_init_configs[each.key].user_data
-}
-
-resource "hcloud_server_network" "networks" {
-  for_each = local.node_networks
-
-  server_id = module.nodes[each.value.node].id
-  subnet_id = values(module.networks[each.value.network].hetzner_subnets)[0].id
 }
 
 resource "null_resource" "test_connection" {
