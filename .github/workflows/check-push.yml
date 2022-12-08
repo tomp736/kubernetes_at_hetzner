@@ -5,9 +5,9 @@ on:
     branches:
       - dev
       - main
-    paths:
-      - '!.github/workflows/*.yml'
-      - '!**/README.md'
+    paths-ignore:
+      - '.github/workflows/*.yml'
+      - '**/README.md'
       
 jobs:
   deploy:
