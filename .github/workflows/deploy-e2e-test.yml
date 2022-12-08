@@ -16,8 +16,7 @@ on:
         required: true
         default: true
   pull_request:
-    branches:    
-      - main  
+    branches:
       - dev
   push:
     paths:
