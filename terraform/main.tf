@@ -46,8 +46,8 @@ module "nodes" {
     [
       module.networks["default"].hetzner_network.id
     ],
-    [ 
-      for network in local.all_nodes[each.value.id].networks : module.networks[network].hetzner_network.id 
+    [
+      for network in local.all_nodes[each.value.id].networks : module.networks[network].hetzner_network.id
     ]
   )
   cloud_init_user_data = module.cloud_init_configs[each.key].user_data
@@ -83,6 +83,10 @@ module "nodes" {
 #   }
 # }
 
+resource "local_file" "ansible_inventory" {
+  content  = ""
+  filename = "ansible_hosts"
+}
 # resource "local_file" "ansible_inventory" {
 #   content  = <<-EOT
 # [bastion]
