@@ -34,7 +34,7 @@ jobs:
               https://api.github.com/repos/tomp736/kubernetes_at_hetzner/deployments?environment=$ENVNAME > $ENVNAME.json
 
               DATE_DEP=$(jq -r '.[] | [.updated_at] | @csv' $ENVNAME.json | sort -r | head -n 1 | tr -d '"')
-              DATE_EXP=$(date -d "$DATE_DEP + 9000 minutes" +%s)
+              DATE_EXP=$(date -d "$DATE_DEP + 30 minutes" +%s)
               DATE_NOW=$(date -u +%s)
 
               if [ "$DATE_EXP" -le "$DATE_NOW" ]
