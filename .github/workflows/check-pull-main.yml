@@ -6,7 +6,7 @@ on:
       - main  
 
 jobs:
-  deploy_with_head_refs:
+  deploy:
     uses: ./.github/workflows/workspace-deploy.yml
     with:
       ENVIRONMENT: ${{ github.actor }}-dev

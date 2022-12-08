@@ -15,13 +15,6 @@ on:
         description: Apply Ansible
         required: true
         default: true
-  pull_request:
-    branches:
-      - dev
-  push:
-    paths:
-      - '!.github/workflows/deploy.yml'
-      - '!**/README.md'
 
 permissions:
   contents: read
