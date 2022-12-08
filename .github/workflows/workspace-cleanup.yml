@@ -10,7 +10,7 @@ jobs:
     name: 'Cleanup'
     runs-on: ubuntu-latest
     outputs:
-      environments: ${{ steps.cleanup_check.outputs.environments }}
+      environments: ${{ steps.cleanup_environments_check.outputs.environments }}
     steps:
       - name: Check if workspace last update was over 30 minutes ago.
         id: cleanup_environments_check
@@ -50,7 +50,7 @@ jobs:
           echo "environments=$TODELETE" >> $GITHUB_OUTPUT
       - id: debug
         run: |
-          echo "Result: ${{ steps.cleanup_check.outputs.environments }}"
+          echo "Result: ${{ steps.cleanup_environments_check.outputs.environments }}"
   cleanup:
     needs: cleanup_check
     uses: ./.github/workflows/workspace-destroy.yml
