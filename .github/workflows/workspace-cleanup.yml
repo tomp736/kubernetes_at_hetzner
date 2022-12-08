@@ -55,6 +55,7 @@ jobs:
     needs: cleanup_check
     uses: ./.github/workflows/workspace-destroy.yml
     strategy:
+      fail-fast: false
       matrix: 
         ENVIRONMENT: ${{fromJson(needs.cleanup_check.outputs.environments)}}
     with:
