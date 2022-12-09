@@ -101,7 +101,7 @@ resource "null_resource" "udev_network_interfaces" {
   }  
   
   triggers = {
-    networks = join(",", [ for network in values(module.nodes[each.value.id].networks) : format("%s_%s", network.network_id, network.mac_address) ])
+    networks = join(",", [ for network in values(module.nodes[each.value.id].networks) : md5(format("%s_%s", network.network_id, network.mac_address)) ])
   }
   
   provisioner "file" {
@@ -125,7 +125,7 @@ EOT
     inline = [
       "sudo systemctl reboot"
     ]
-    on_failure = "continue"
+    on_failure = continue
   }
 }
 
