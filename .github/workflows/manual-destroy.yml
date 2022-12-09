@@ -1,10 +1,10 @@
-name: 'Manual Deploy'
+name: 'Manual Destroy'
 
 on:
   workflow_dispatch:
       
 jobs:
-  deploy:
+  destroy:
     uses: ./.github/workflows/workspace-destroy.yml
     with:
       ENVIRONMENT: ${{ github.actor }}-${{ github.ref_name }}
