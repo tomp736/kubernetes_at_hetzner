@@ -125,7 +125,7 @@ EOT
     inline = [
       "sudo systemctl reboot"
     ]
-    allow_missing_exit_status = true
+    on_failure = "continue"
   }
 }
 
