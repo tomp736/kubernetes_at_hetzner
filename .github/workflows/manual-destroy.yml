@@ -1,0 +1,12 @@
+name: 'Manual Deploy'
+
+on:
+  workflow_dispatch:
+      
+jobs:
+  deploy:
+    uses: ./.github/workflows/workspace-destroy.yml
+    with:
+      ENVIRONMENT: ${{ github.actor }}-${{ github.ref_name }}
+      TF_MODULES_REF: ${{ github.ref_name }}
+    secrets: inherit
