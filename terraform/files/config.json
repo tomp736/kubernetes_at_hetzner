@@ -23,12 +23,10 @@
             "networks": [
                 { 
                     "id" : "bnet",
-                    "mac" : "6a:78:25:cb:e8:79",
                     "ip" : ""
                 },
                 {
                     "id" : "knet",
-                    "mac" : "ae:39:d6:a2:5b:7e",
                     "ip" : ""
                 }
             ],
@@ -46,12 +44,10 @@
             "networks": [
                 { 
                     "id" : "bnet",
-                    "mac" : "6a:78:25:4e:ad:80",
                     "ip" : ""
                 },
                 {
                     "id" : "knet",
-                    "mac" : "ae:39:d6:a2:5b:7e",
                     "ip" : ""
                 }
             ],
@@ -69,12 +65,10 @@
             "networks": [
                 { 
                     "id" : "bnet",
-                    "mac" : "6a:78:25:07:23:db",
                     "ip" : ""
                 },
                 {
                     "id" : "knet",
-                    "mac" : "ae:39:d6:a2:5b:7e",
                     "ip" : ""
                 }
             ],
@@ -92,7 +86,6 @@
             "networks": [
                 { 
                     "id" : "bnet",
-                    "mac" : "6a:78:25:cb:e8:79",
                     "ip" : ""
                 }
             ],
