@@ -3,7 +3,7 @@ name: 'Workspace Cleanup'
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '*/30 * * * *'
+    - cron:  '*/15 * * * *'
 
 jobs:
   cleanup_check:
@@ -37,7 +37,7 @@ jobs:
               DATE_EXP=$(date -d "$DATE_DEP + 30 minutes" +%s)
               DATE_NOW=$(date -u +%s)
 
-              if [ "$DATE_EXP" -le "$DATE_NOW" ]
+              if [ "$DATE_EXP" -ge "$DATE_NOW" ]
               then 
                   echo $ENVNAME
                   jq -r --arg ENVNAME "$ENVNAME" 'del(.[] | select (.name == $ENVNAME))' envs.json | sponge envs.json
