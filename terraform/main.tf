@@ -60,7 +60,7 @@ resource "null_resource" "test_connection" {
   ]
 
   connection {
-    host         = module.nodes[each.value.id].networks[module.networks["bnet"].hetzner_network.id]
+    host         = module.nodes[each.value.id].networks[module.networks["bnet"].hetzner_network.id].ip
     bastion_host = module.nodes[values(local.bastion_nodes)[0].id].ipv4_address
     agent        = true
     user         = "sysadmin"
@@ -79,6 +79,31 @@ resource "null_resource" "test_connection" {
       "cloud-init status --wait"
     ]
     on_failure = continue
+  }
+}
+
+
+resource "null_resource" "udev_network_interfaces" {
+  for_each = local.all_nodes
+
+  depends_on = [
+    module.nodes
+  ]
+
+  connection {
+    host         = module.nodes[each.value.id].networks[module.networks["bnet"].hetzner_network.id].ip
+    bastion_host = module.nodes[values(local.bastion_nodes)[0].id].ipv4_address
+    agent        = true
+    user         = "sysadmin"
+    port         = "2222"
+    type         = "ssh"
+    timeout      = "5m"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      for network in local.all_nodes[each.value.id].networks : 
+        "echo KERNEL==\"ens*\", SYSFS{address}==\"${network.mac_address}\", NAME=\"${local.all_networks[network.id].name}\" >> /etc/udev/rules.d/90_networkinterfaces.rules"      
+    ]
   }
 }
 
