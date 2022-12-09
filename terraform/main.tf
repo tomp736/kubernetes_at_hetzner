@@ -42,20 +42,13 @@ module "nodes" {
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node?ref=main"
 
   node_config = each.value
-  networks = concat(
-    [
-      {
-        name = "default"
-        id   = module.networks["default"].hetzner_network.id
-      }
-    ],
-    [
-      for network in local.all_nodes[each.value.id].networks : {
-        name = network
-        id   = module.networks[network].hetzner_network.id
-      }
-    ]
-  )
+  networks = [
+    for network in local.all_nodes[each.value.id].networks : {
+      name       = network.id
+      network_id = module.networks[network.id].hetzner_network.id
+      ip         = network.ip == "" ? null : network.ip
+    }
+  ]
   cloud_init_user_data = module.cloud_init_configs[each.key].user_data
 }
 
@@ -67,7 +60,7 @@ resource "null_resource" "test_connection" {
   ]
 
   connection {
-    host         = module.nodes[each.value.id].networks[module.networks["bnet"].hetzner_network.id]
+    host         = module.nodes[each.value.id].networks[module.networks["bnet"].hetzner_network.id].ip
     bastion_host = module.nodes[values(local.bastion_nodes)[0].id].ipv4_address
     agent        = true
     user         = "sysadmin"
@@ -84,6 +77,53 @@ resource "null_resource" "test_connection" {
   provisioner "remote-exec" {
     inline = [
       "cloud-init status --wait"
+    ]
+    on_failure = continue
+  }
+}
+
+
+resource "null_resource" "udev_network_interfaces" {
+  for_each = local.all_nodes
+
+  depends_on = [
+    module.nodes
+  ]
+
+  connection {
+    host         = module.nodes[each.value.id].networks[module.networks["bnet"].hetzner_network.id].ip
+    bastion_host = module.nodes[values(local.bastion_nodes)[0].id].ipv4_address
+    agent        = true
+    user         = "sysadmin"
+    port         = "2222"
+    type         = "ssh"
+    timeout      = "5m"
+  }  
+  
+  triggers = {
+    networks = join(",", [ for network in values(module.nodes[each.value.id].networks) : md5(format("%s_%s", network.network_id, network.mac_address)) ])
+  }
+  
+  provisioner "file" {
+    content = <<EOT
+%{ for network in each.value.networks ~} 
+# interface with MAC address "${module.nodes[each.value.id].networks[module.networks[network.id].hetzner_network.id].mac_address}" will be assigned "${network.id}"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="${module.nodes[each.value.id].networks[module.networks[network.id].hetzner_network.id].mac_address}", NAME="${network.id}"
+%{ endfor ~}
+EOT
+    destination = "/tmp/70-persistent-net.rules"
+  }
+  
+  provisioner "remote-exec" {
+    inline = [
+      "sudo cp -f /tmp/70-persistent-net.rules /etc/udev/rules.d/70-persistent-net.rules",
+      "sudo chmod 644 /etc/udev/rules.d/70-persistent-net.rules"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo systemctl reboot"
     ]
     on_failure = continue
   }
@@ -108,17 +148,17 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadm
 
 [master]
 %{for node in local.master_nodes~}
-${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id]}
+${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id].ip}
 %{~endfor}
 
 [worker]
 %{for node in local.worker_nodes~}
-${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id]}
+${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id].ip}
 %{~endfor}
 
 [haproxy]
 %{for node in local.haproxy_nodes~}
-${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id]}
+${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id].ip}
 %{~endfor}
   EOT
   filename = "ansible_hosts"

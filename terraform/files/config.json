@@ -1,14 +1,6 @@
 {
     "networks": [
         {
-            "id": "default",
-            "name": "default",
-            "ip_range": "10.97.0.0/16",
-            "subnet_ranges": [
-                "10.97.0.0/16"
-            ]
-        },
-        {
             "id": "bnet",
             "name": "bnet",
             "ip_range": "10.98.0.0/16",
@@ -29,8 +21,14 @@
         {
             "id": "c0m0",
             "networks": [
-                "bnet",
-                "knet"
+                { 
+                    "id" : "bnet",
+                    "ip" : ""
+                },
+                {
+                    "id" : "knet",
+                    "ip" : ""
+                }
             ],
             "name": "c0m0",
             "location": "nbg1",
@@ -44,8 +42,14 @@
         {
             "id": "c0w0",
             "networks": [
-                "bnet",
-                "knet"
+                { 
+                    "id" : "bnet",
+                    "ip" : ""
+                },
+                {
+                    "id" : "knet",
+                    "ip" : ""
+                }
             ],
             "name": "c0w0",
             "location": "nbg1",
@@ -59,8 +63,14 @@
         {
             "id": "c0p0",
             "networks": [
-                "bnet",
-                "knet"
+                { 
+                    "id" : "bnet",
+                    "ip" : ""
+                },
+                {
+                    "id" : "knet",
+                    "ip" : ""
+                }
             ],
             "name": "c0p0",
             "location": "nbg1",
@@ -74,7 +84,10 @@
         {
             "id": "c0b0",
             "networks": [
-                "bnet"
+                { 
+                    "id" : "bnet",
+                    "ip" : ""
+                }
             ],
             "name": "c0b0",
             "location": "nbg1",
