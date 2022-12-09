@@ -118,8 +118,15 @@ EOT
     inline = [
       "sudo cp -f /tmp/70-persistent-net.rules /etc/udev/rules.d/70-persistent-net.rules",
       "sudo chmod 644 /etc/udev/rules.d/70-persistent-net.rules",
-      "sudo ( sleep 5 ; reboot ) & "
+      "sudo systemctl reboot"
     ]
+  }
+  
+  provisioner "remote-exec" {
+    inline = [
+      "sudo systemctl reboot"
+    ]
+    allow_missing_exit_status = true
   }
 }
 
