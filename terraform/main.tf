@@ -101,17 +101,17 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadm
 
 [master]
 %{for node in local.master_nodes~}
-${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id]}
+${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id].ip}
 %{~endfor}
 
 [worker]
 %{for node in local.worker_nodes~}
-${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id]}
+${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id].ip}
 %{~endfor}
 
 [haproxy]
 %{for node in local.haproxy_nodes~}
-${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id]}
+${~node.name} ansible_host=${module.nodes[node.id].networks[module.networks["bnet"].hetzner_network.id].ip}
 %{~endfor}
   EOT
   filename = "ansible_hosts"
