@@ -46,7 +46,7 @@ module "nodes" {
     for network in local.all_nodes[each.value.id].networks : {
       name       = network.id
       network_id = module.networks[network.id].hetzner_network.id
-      ip         = network.ip
+      ip         = network.ip == "" ? null : network.ip
     }
   ]
   cloud_init_user_data = module.cloud_init_configs[each.key].user_data
