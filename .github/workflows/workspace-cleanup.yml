@@ -53,6 +53,7 @@ jobs:
           echo "Result: ${{ steps.cleanup_environments_check.outputs.environments }}"
   cleanup:
     needs: cleanup_check
+    if: ${{ needs.cleanup_check.outputs.environments != '' }}
     uses: ./.github/workflows/workspace-destroy.yml
     strategy:
       fail-fast: false
