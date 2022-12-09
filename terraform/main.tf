@@ -118,7 +118,7 @@ EOT
     inline = [
       "sudo cp -f /tmp/70-persistent-net.rules /etc/udev/rules.d/70-persistent-net.rules",
       "sudo chmod 644 /etc/udev/rules.d/70-persistent-net.rules",
-      "sudo systemctl reboot"
+      "sudo ( sleep 5 ; reboot ) & "
     ]
   }
 }
