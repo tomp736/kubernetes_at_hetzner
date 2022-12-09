@@ -98,14 +98,28 @@ resource "null_resource" "udev_network_interfaces" {
     port         = "2222"
     type         = "ssh"
     timeout      = "5m"
+  }  
+  
+  triggers = {
+    networks = join(",", [ for network in values(module.nodes[each.value.id].networks) : format("%s_%s", network.network_id, network.mac_address) ])
   }
   
   provisioner "file" {
-    content = [
-      for network in each.value.networks : 
-        "KERNEL==\"ens*\", SYSFS{address}==\"${module.nodes[each.value.id].networks[module.networks[network.id].hetzner_network.id].mac_address}\", NAME=\"${network.id}\""
+    content = <<EOT
+%{ for network in each.value.networks ~} 
+# interface with MAC address "${module.nodes[each.value.id].networks[module.networks[network.id].hetzner_network.id].mac_address}" will be assigned "${network.id}"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="${module.nodes[each.value.id].networks[module.networks[network.id].hetzner_network.id].mac_address}", NAME="${network.id}"
+%{ endfor ~}
+EOT
+    destination = "/tmp/70-persistent-net.rules"
+  }
+  
+  provisioner "remote-exec" {
+    inline = [
+      "sudo cp -f /tmp/70-persistent-net.rules /etc/udev/rules.d/70-persistent-net.rules",
+      "sudo chmod 644 /etc/udev/rules.d/70-persistent-net.rules",
+      "sudo systemctl reboot"
     ]
-    destination = "/etc/udev/rules.d/70-persistent-net.rules"
   }
 }
 
