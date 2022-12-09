@@ -44,10 +44,9 @@ module "nodes" {
   node_config = each.value
   networks = [
     for network in local.all_nodes[each.value.id].networks : {
-      name = network.id
-      id   = module.networks[network.id].hetzner_network.id
-      mac  = network.mac
-      ip   = network.ip
+      name       = network.id
+      network_id = module.networks[network.id].hetzner_network.id
+      ip         = network.ip
     }
   ]
   cloud_init_user_data = module.cloud_init_configs[each.key].user_data
