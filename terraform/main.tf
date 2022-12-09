@@ -42,20 +42,14 @@ module "nodes" {
   source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node?ref=main"
 
   node_config = each.value
-  networks = concat(
-    [
-      {
-        name = "default"
-        id   = module.networks["default"].hetzner_network.id
-      }
-    ],
-    [
-      for network in local.all_nodes[each.value.id].networks : {
-        name = network
-        id   = module.networks[network].hetzner_network.id
-      }
-    ]
-  )
+  networks = [
+    for network in local.all_nodes[each.value.id].networks : {
+      name = network.id
+      id   = module.networks[network.id].hetzner_network.id
+      mac  = network.mac
+      ip   = network.ip
+    }
+  ]
   cloud_init_user_data = module.cloud_init_configs[each.key].user_data
 }
 
