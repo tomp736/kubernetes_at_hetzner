@@ -99,11 +99,13 @@ resource "null_resource" "udev_network_interfaces" {
     type         = "ssh"
     timeout      = "5m"
   }
-  provisioner "remote-exec" {
-    inline = [
+  
+  provisioner "file" {
+    content = [
       for network in each.value.networks : 
-        "sudo echo KERNEL==\"ens*\", SYSFS{address}==\"${module.nodes[each.value.id].networks[module.networks[network.id].hetzner_network.id].mac_address}\", NAME=\"${network.id}\" > /etc/udev/rules.d/90_${network.id}_interface.rules"
+        "KERNEL==\"ens*\", SYSFS{address}==\"${module.nodes[each.value.id].networks[module.networks[network.id].hetzner_network.id].mac_address}\", NAME=\"${network.id}\""
     ]
+    destination = "/etc/udev/rules.d/70-persistent-net.rules"
   }
 }
 
