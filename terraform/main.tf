@@ -102,7 +102,7 @@ resource "null_resource" "udev_network_interfaces" {
   provisioner "remote-exec" {
     inline = [
       for network in each.value.networks : 
-        "echo KERNEL==\"ens*\", SYSFS{address}==\"${module.nodes[each.value.id].networks[module.networks[network.id].id].mac_address}\", NAME=\"${module.networks[network.id].id}\" >> /etc/udev/rules.d/90_networkinterfaces.rules"      
+        "echo KERNEL==\"ens*\", SYSFS{address}==\"${module.nodes[each.value.id].networks[module.networks[network.id].id].mac_address}\", NAME=\"${network.id}\" > /etc/udev/rules.d/90_${network.id}_interface.rules"
     ]
   }
 }
