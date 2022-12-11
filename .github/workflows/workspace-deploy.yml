@@ -5,7 +5,7 @@ permissions:
 
 jobs:
   terraform:
-    name: 'Deploy'
+    name: 'terraform'
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/labrats-work/ops-images/omnibus:latest
@@ -64,7 +64,8 @@ jobs:
         terraform -chdir=terraform apply tfplan
 
   ansible:
-    name: 'Deploy'
+    needs: terraform
+    name: 'ansible'
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/labrats-work/ops-images/omnibus:latest
@@ -80,23 +81,26 @@ jobs:
       name: Update Ansible Ref
       run: |
         sed -i 's|version: main|version: ${{ inputs.ANSIBLE_MODULES_REF }}|g' ansible/requirements.yml
-    # - 
-    #   name: Copy Ansible Hosts
-    #   if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
-    #   run: |
-    #     cp terraform/ansible_hosts ansible/inventory/hosts
-    # - 
-    #   if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
-    #   name: Run playbook
-    #   uses: labrats-work/action-ansible@main
-    #   with:
-    #     workingDirectory: ./ansible
-    #     inventoryFile: inventory/hosts
-    #   env:
-    #     FLUX_INIT_OWNER: tomp736
-    #     FLUX_INIT_REPO: kubernetes_at_hetzner_flux
-    #     FLUX_INIT_PATH: ./clusters/${{ inputs.FLUX_WORKSPACE }}
-    #     FLUX_INIT_TOKEN: ${{ secrets.FLUX_INIT_TOKEN }}
+    - 
+      name: Copy Ansible Hosts
+      run: |
+        cp terraform/ansible_hosts ansible/inventory/hosts
+    - 
+      name: Ansible Galaxy Install
+      run: 
+        cd ./ansible
+        ansible-galaxy install -fr requirements.yml
+    - 
+      name: Ansible Playbook
+      uses: labrats-work/action-ansible@main
+      run:
+        cd ./ansible
+        ansible-playbook -i inventory/hosts site.yml
+      env:
+        FLUX_INIT_OWNER: tomp736
+        FLUX_INIT_REPO: kubernetes_at_hetzner_flux
+        FLUX_INIT_PATH: ./clusters/${{ inputs.FLUX_WORKSPACE }}
+        FLUX_INIT_TOKEN: ${{ secrets.FLUX_INIT_TOKEN }}
 
 env:
   KEYFILE: ${{ secrets.SSH_KEY }}
