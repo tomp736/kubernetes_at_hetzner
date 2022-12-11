@@ -95,7 +95,9 @@ jobs:
     - 
       name: Update Ansible Ref
       run: |
-        sed -i 's|version: main|version: ${{ inputs.ANSIBLE_MODULES_REF }}|g' ansible/requirements.yml
+        name="https://github.com/labrats-work/modules-ansible.git"
+        version=${{ inputs.ANSIBLE_MODULES_REF }}
+        yq w -i requirements.yml "*.src: $name.version" $version
     - 
       name: Cache Ansible Galaxy Collections
       uses: actions/cache@v2
