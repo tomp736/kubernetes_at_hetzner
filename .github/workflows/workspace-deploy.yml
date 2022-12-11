@@ -98,7 +98,7 @@ jobs:
         cd ./ansible
         name="https://github.com/labrats-work/modules-ansible.git"
         version=${{ inputs.ANSIBLE_MODULES_REF }}
-        yq -i requirements.yml "*.src: $name.version" $version
+        yq -i "*.src: $name.version" $version requirements.yml 
     - 
       name: Cache Ansible Galaxy Collections
       uses: actions/cache@v2
