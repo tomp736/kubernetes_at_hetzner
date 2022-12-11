@@ -64,7 +64,8 @@ jobs:
       env:
         KEYFILE: ${{ secrets.SSH_KEY }}
         TF_CLI_CONFIG_FILE: default.tfrc
-    - uses: actions/upload-artifact@v2
+    - 
+      uses: actions/upload-artifact@v2
       with:
         name: terraform-output
         path: terraform/ansible_hosts
@@ -90,7 +91,7 @@ jobs:
     - 
       name: Copy Ansible Hosts
       run: |
-        cp terraform/ansible_hosts ansible/inventory/hosts
+        cp ansible_hosts ansible/inventory/hosts
     - 
       name: Update Ansible Ref
       run: |
