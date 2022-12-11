@@ -64,6 +64,10 @@ jobs:
       env:
         KEYFILE: ${{ secrets.SSH_KEY }}
         TF_CLI_CONFIG_FILE: default.tfrc
+    - uses: actions/upload-artifact@v2
+      with:
+        name: terraform-output
+        path: terraform/ansible_hosts
 
   ansible:
     needs: terraform
