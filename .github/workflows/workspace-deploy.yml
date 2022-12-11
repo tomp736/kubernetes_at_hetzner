@@ -101,7 +101,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.ansible/collections
-        key: ${{ runner.os }}-ansible-galaxy-collections-${{ hashFiles('**/collections.yml') }}
+        key: ${{ runner.os }}-ansible-galaxy-collections-${{ hashFiles('**/requirements.yml') }}
     -     
       name: Ansible Galaxy Install
       run: |
