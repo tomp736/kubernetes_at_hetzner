@@ -97,6 +97,12 @@ jobs:
       run: |
         sed -i 's|version: main|version: ${{ inputs.ANSIBLE_MODULES_REF }}|g' ansible/requirements.yml
     - 
+      name: Cache Ansible Galaxy Collections
+      uses: actions/cache@v2
+      with:
+        path: ~/.ansible/collections
+        key: ${{ runner.os }}-ansible-galaxy-collections-${{ hashFiles('**/collections.yml') }}
+    -     
       name: Ansible Galaxy Install
       run: |
         cd ./ansible
