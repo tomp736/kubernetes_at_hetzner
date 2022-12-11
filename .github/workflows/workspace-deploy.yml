@@ -95,6 +95,7 @@ jobs:
     - 
       name: Update Ansible Ref
       run: |
+        cd ./ansible
         name="https://github.com/labrats-work/modules-ansible.git"
         version=${{ inputs.ANSIBLE_MODULES_REF }}
         yq w -i requirements.yml "*.src: $name.version" $version
