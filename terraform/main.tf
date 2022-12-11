@@ -123,7 +123,7 @@ EOT
 
   provisioner "remote-exec" {
     inline = [
-      "sudo systemctl reboot"
+      "sudo shutdown -r now"
     ]
     on_failure = continue
   }
