@@ -18,6 +18,11 @@ jobs:
       name: Checkout
       uses: actions/checkout@v3
     - 
+      name: Start sshagent and add key.
+      run: |
+        eval `ssh-agent`
+        echo "${KEYFILE}" | ssh-add -
+    - 
       name: Create default.tfvars file
       run: |
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" > terraform/default.tfvars
@@ -79,7 +84,7 @@ jobs:
 env:
   KEYFILE: ${{ secrets.SSH_KEY }}
   TF_CLI_CONFIG_FILE: default.tfrc
-  
+
 on:
   workflow_call:
     inputs:
