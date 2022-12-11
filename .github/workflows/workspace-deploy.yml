@@ -80,13 +80,17 @@ jobs:
       name: Checkout
       uses: actions/checkout@v3
     - 
-      name: Update Ansible Ref
-      run: |
-        sed -i 's|version: main|version: ${{ inputs.ANSIBLE_MODULES_REF }}|g' ansible/requirements.yml
+      uses: actions/download-artifact@v2
+      with:
+        name: terraform/ansible_hosts
     - 
       name: Copy Ansible Hosts
       run: |
         cp terraform/ansible_hosts ansible/inventory/hosts
+    - 
+      name: Update Ansible Ref
+      run: |
+        sed -i 's|version: main|version: ${{ inputs.ANSIBLE_MODULES_REF }}|g' ansible/requirements.yml
     - 
       name: Ansible Galaxy Install
       run: |
