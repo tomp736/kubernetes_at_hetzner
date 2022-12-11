@@ -51,7 +51,7 @@ jobs:
         sed -i 's|version: main|version: ${{ inputs.ANSIBLE_MODULES_REF }}|g' ansible/requirements.yml
     - 
       name: Terraform Init
-      run: terraform -chdir=terraform init -backend-config=config.remote.tfbackend
+      run: terraform -chdir=terraform init -backend-config=terraform/config.remote.tfbackend
     - 
       name: Terraform Plan
       run: terraform -chdir=terraform plan --var-file=default.tfvars -out=tfplan -input=false
