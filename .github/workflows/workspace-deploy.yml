@@ -7,6 +7,8 @@ jobs:
   deploy:
     name: 'Deploy'
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/labrats-work/ops-images/omnibus:latest
     environment: ${{ inputs.ENVIRONMENT }}
     concurrency: 
       group: ${{ inputs.ENVIRONMENT }}
@@ -48,31 +50,14 @@ jobs:
       run: |
         sed -i 's|version: main|version: ${{ inputs.ANSIBLE_MODULES_REF }}|g' ansible/requirements.yml
     - 
+      name: Terraform Init
+      run: terraform -chdir=terraform init -backend-config=config.remote.tfbackend
+    - 
       name: Terraform Plan
-      uses: labrats-work/action-terraform@main
-      with:
-        chdir: terraform
-        verb: plan
-        init: yes
-        varsFile: default.tfvars
-        planFile: tfplan
-        backendConfigFile: config.remote.tfbackend
-      env:
-        TF_CLI_CONFIG_FILE: default.tfrc
-        KEYFILE: ${{ secrets.SSH_KEY }}
+      run: terraform -chdir=terraform plan --var-file=default.tfvars -out=tfplan -input=false
     - 
       name: Terraform Apply
-      if: inputs.TERRAFORM_APPLY 
-      uses: labrats-work/action-terraform@main
-      with:
-        chdir: terraform
-        verb: apply
-        init: yes
-        planFile: tfplan
-        backendConfigFile: config.remote.tfbackend
-      env:
-        TF_CLI_CONFIG_FILE: default.tfrc
-        KEYFILE: ${{ secrets.SSH_KEY }}
+      run: terraform -chdir=terraform apply tfplan
     - 
       name: Copy Ansible Hosts
       if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
@@ -90,8 +75,9 @@ jobs:
         FLUX_INIT_REPO: kubernetes_at_hetzner_flux
         FLUX_INIT_PATH: ./clusters/${{ inputs.FLUX_WORKSPACE }}
         FLUX_INIT_TOKEN: ${{ secrets.FLUX_INIT_TOKEN }}
-        KEYFILE: ${{ secrets.SSH_KEY }}
 
+env:
+  KEYFILE: ${{ secrets.SSH_KEY }}
 on:
   workflow_call:
     inputs:
