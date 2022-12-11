@@ -18,11 +18,6 @@ jobs:
       name: Checkout
       uses: actions/checkout@v3
     - 
-      name: Start sshagent and add key.
-      run: |
-        eval `ssh-agent`
-        echo "${KEYFILE}" | ssh-add -
-    - 
       name: Create default.tfvars file
       run: |
         echo "hcloud_token = \"${{ secrets.HCLOUD_TOKEN }}\"" > terraform/default.tfvars
@@ -94,6 +89,8 @@ jobs:
       name: Ansible Playbook
       uses: labrats-work/action-ansible@main
       run:
+        eval `ssh-agent`
+        echo "${KEYFILE}" | ssh-add -
         cd ./ansible
         ansible-playbook -i inventory/hosts site.yml
       env:
