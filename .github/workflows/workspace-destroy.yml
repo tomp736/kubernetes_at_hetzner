@@ -57,6 +57,7 @@ jobs:
         echo "${KEYFILE}" | ssh-add -
         terraform -chdir=terraform destroy --var-file=default.tfvars -auto-approve -input=false
       env:
+        KEYFILE: ${{ secrets.SSH_KEY }}
         TF_CLI_CONFIG_FILE: default.tfrc
 
 on:
