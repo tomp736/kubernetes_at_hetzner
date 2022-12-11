@@ -48,15 +48,22 @@ jobs:
     - 
       name: Terraform Init
       run: terraform -chdir=terraform init -backend-config=config.remote.tfbackend
+      env:
+        TF_CLI_CONFIG_FILE: default.tfrc
     - 
       name: Terraform Plan
       run: terraform -chdir=terraform plan --var-file=default.tfvars -out=tfplan -input=false
+      env:
+        TF_CLI_CONFIG_FILE: default.tfrc
     - 
       name: Terraform Apply
       run: |      
         eval `ssh-agent`
         echo "${KEYFILE}" | ssh-add -
         terraform -chdir=terraform apply tfplan
+      env:
+        KEYFILE: ${{ secrets.SSH_KEY }}
+        TF_CLI_CONFIG_FILE: default.tfrc
 
   ansible:
     needs: terraform
@@ -94,14 +101,11 @@ jobs:
         cd ./ansible
         ansible-playbook -i inventory/hosts site.yml
       env:
+        KEYFILE: ${{ secrets.SSH_KEY }}
         FLUX_INIT_OWNER: tomp736
         FLUX_INIT_REPO: kubernetes_at_hetzner_flux
         FLUX_INIT_PATH: ./clusters/${{ inputs.FLUX_WORKSPACE }}
-        FLUX_INIT_TOKEN: ${{ secrets.FLUX_INIT_TOKEN }}
-
-env:
-  KEYFILE: ${{ secrets.SSH_KEY }}
-  TF_CLI_CONFIG_FILE: default.tfrc
+        FLUX_INIT_TOKEN: ${{ secrets.FLUX_INIT_TOKEN }}  
 
 on:
   workflow_call:
