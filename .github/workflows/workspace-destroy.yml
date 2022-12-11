@@ -63,6 +63,7 @@ jobs:
     needs: destroy
     runs-on: ubuntu-latest
     steps:
+    - 
       name: Update environment state to inactive.
       run: |
         # Set the environment state to inactive
