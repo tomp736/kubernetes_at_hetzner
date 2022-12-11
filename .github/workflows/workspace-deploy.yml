@@ -51,30 +51,30 @@ jobs:
         sed -i 's|version: main|version: ${{ inputs.ANSIBLE_MODULES_REF }}|g' ansible/requirements.yml
     - 
       name: Terraform Init
-      run: terraform -chdir=terraform init -backend-config=terraform/config.remote.tfbackend
+      run: terraform -chdir=terraform init -backend-config=config.remote.tfbackend
     - 
       name: Terraform Plan
       run: terraform -chdir=terraform plan --var-file=default.tfvars -out=tfplan -input=false
     - 
       name: Terraform Apply
       run: terraform -chdir=terraform apply tfplan
-    - 
-      name: Copy Ansible Hosts
-      if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
-      run: |
-        cp terraform/ansible_hosts ansible/inventory/hosts
-    - 
-      if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
-      name: Run playbook
-      uses: labrats-work/action-ansible@main
-      with:
-        workingDirectory: ./ansible
-        inventoryFile: inventory/hosts
-      env:
-        FLUX_INIT_OWNER: tomp736
-        FLUX_INIT_REPO: kubernetes_at_hetzner_flux
-        FLUX_INIT_PATH: ./clusters/${{ inputs.FLUX_WORKSPACE }}
-        FLUX_INIT_TOKEN: ${{ secrets.FLUX_INIT_TOKEN }}
+    # - 
+    #   name: Copy Ansible Hosts
+    #   if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
+    #   run: |
+    #     cp terraform/ansible_hosts ansible/inventory/hosts
+    # - 
+    #   if: inputs.TERRAFORM_APPLY && inputs.ANSIBLE_APPLY
+    #   name: Run playbook
+    #   uses: labrats-work/action-ansible@main
+    #   with:
+    #     workingDirectory: ./ansible
+    #     inventoryFile: inventory/hosts
+    #   env:
+    #     FLUX_INIT_OWNER: tomp736
+    #     FLUX_INIT_REPO: kubernetes_at_hetzner_flux
+    #     FLUX_INIT_PATH: ./clusters/${{ inputs.FLUX_WORKSPACE }}
+    #     FLUX_INIT_TOKEN: ${{ secrets.FLUX_INIT_TOKEN }}
 
 env:
   KEYFILE: ${{ secrets.SSH_KEY }}
