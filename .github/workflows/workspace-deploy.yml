@@ -103,6 +103,7 @@ jobs:
       name: Cache Ansible
       uses: actions/cache@v3
       with:
+        key: ${{ github.sha }}-${{ inputs.ANSIBLE_MODULES_REF }}
         path: |
           ~/.ansible
     -     
@@ -157,6 +158,7 @@ jobs:
       name: Cache Ansible
       uses: actions/cache@v3
       with:
+        key: ${{ github.sha }}-${{ inputs.ANSIBLE_MODULES_REF }}
         path: |
           ~/.ansible
     -     
