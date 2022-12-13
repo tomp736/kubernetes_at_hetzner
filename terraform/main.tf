@@ -56,15 +56,17 @@ module "worker_node_group" {
 
 resource "local_file" "ansible_inventory" {
   content = templatefile("files/templates/hosts.tftpl", {
-    bastion_nodes = [for node in local.config_nodes_bastion : {
+    bastion_nodes = [for node in module.bastion_node_group.nodes : {
       name         = node.name,
-      ansible_host = module.bastion_node_group.nodes[node.id].ipv4_address
+      ansible_host = node.ipv4_address
     }]
-    master_nodes = [for node in local.config_nodes_master : {
-      name         = node.name
+    master_nodes = [for node in module.master_node_group.nodes : {
+      name         = node.name,
+      ansible_host = node.networks[module.networks["bnet"].hetzner_network.id].ip
     }]
-    worker_nodes = [for node in local.config_nodes_worker : {
-      name         = node.name
+    worker_nodes = [for node in module.worker_node_group.nodes : {
+      name         = node.name,
+      ansible_host = node.networks[module.networks["bnet"].hetzner_network.id].ip
     }]
   })
   filename = "ansible_hosts"
