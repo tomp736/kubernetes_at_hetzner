@@ -73,7 +73,6 @@ jobs:
         path: terraform/ansible_hosts
 
   ansible-init:
-    needs: terraform
     name: 'ansible-init'
     runs-on: ubuntu-latest
     container:
