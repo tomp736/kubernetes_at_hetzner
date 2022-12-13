@@ -99,12 +99,6 @@ jobs:
       run: |
         cd ./ansible
         yq -i '.collections[] |= select(.name == "https://github.com/labrats-work/modules-ansible.git").version="${{ inputs.ANSIBLE_MODULES_REF }}"' requirements.yml
-    - 
-      name: Cache Ansible Galaxy Collections
-      uses: actions/cache@v2
-      with:
-        path: ~/.ansible/collections
-        key: ${{ runner.os }}-ansible-galaxy-collections-${{ hashFiles('**/requirements.yml') }}
     -     
       name: Ansible Galaxy Install
       run: |
@@ -153,12 +147,6 @@ jobs:
       run: |
         cd ./ansible
         yq -i '.collections[] |= select(.name == "https://github.com/labrats-work/modules-ansible.git").version="${{ inputs.ANSIBLE_MODULES_REF }}"' requirements.yml
-    - 
-      name: Cache Ansible Galaxy Collections
-      uses: actions/cache@v2
-      with:
-        path: ~/.ansible/collections
-        key: ${{ runner.os }}-ansible-galaxy-collections-${{ hashFiles('**/requirements.yml') }}
     -     
       name: Ansible Galaxy Install
       run: |
