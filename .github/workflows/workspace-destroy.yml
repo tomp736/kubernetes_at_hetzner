@@ -4,9 +4,10 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
-    name: 'Destroy'
+  destroy:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/labrats-work/ops-images/omnibus:latest
     environment: ${{ inputs.ENVIRONMENT }}
     concurrency: 
       group: ${{ inputs.ENVIRONMENT }}
@@ -44,19 +45,33 @@ jobs:
         sed -i 's|modules-terraform.git//modules/hetzner/network?ref=main|modules-terraform.git//modules/hetzner/network?ref=${{ inputs.TF_MODULES_REF }}|g' terraform/main.tf
         sed -i 's|modules-terraform.git//modules/hetzner/node?ref=main|modules-terraform.git//modules/hetzner/node?ref=${{ inputs.TF_MODULES_REF }}|g' terraform/main.tf
     - 
-      id: destroy
-      continue-on-error: true
-      name: Terraform Destroy
-      uses: labrats-work/action-terraform@main
-      with:
-        chdir: terraform
-        verb: destroy
-        init: yes
-        varsFile: default.tfvars
-        backendConfigFile: config.remote.tfbackend
+      name: Terraform Init
+      run: terraform -chdir=terraform init -backend-config=config.remote.tfbackend
       env:
         TF_CLI_CONFIG_FILE: default.tfrc
+    - 
+      name: Terraform Destroy
+      run: |
+        eval `ssh-agent`
+        echo "${KEYFILE}" | ssh-add -
+        terraform -chdir=terraform destroy --var-file=default.tfvars -auto-approve -input=false
+      env:
         KEYFILE: ${{ secrets.SSH_KEY }}
+        TF_CLI_CONFIG_FILE: default.tfrc
+
+  update-environment-status:
+    needs: destroy
+    runs-on: ubuntu-latest
+    steps:
+    - 
+      name: Update environment state to inactive.
+      run: |
+        # Set the environment state to inactive
+        curl -X PATCH \
+          -H "Authorization: Bearer $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github+json" \
+          -d '{"state": "inactive"}' \
+          https://api.github.com/repos/$GITHUB_REPOSITORY/deployments/$GITHUB_DEPLOYMENT_ID/environments/$GITHUB_ENVIRONMENT
 
 on:
   workflow_call:

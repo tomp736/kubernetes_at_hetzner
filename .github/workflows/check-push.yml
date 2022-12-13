@@ -6,7 +6,6 @@ on:
       - dev
       - main
     paths-ignore:
-      - '.github/workflows/*.yml'
       - '**/README.md'
       
 jobs:

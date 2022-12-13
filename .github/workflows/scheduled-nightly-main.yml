@@ -6,13 +6,26 @@ on:
     - cron:  '0 0 * * *'
 
 jobs:
-  deploy:
+  deploy-main:
     uses: ./.github/workflows/workspace-deploy.yml
     with:
       ENVIRONMENT: tomp736-main
+      REPO_REF: main
       TF_MODULES_REF: main
       ANSIBLE_MODULES_REF: main
       FLUX_WORKSPACE: main
+      TERRAFORM_APPLY: true
+      ANSIBLE_APPLY: true
+      PUBLIC_KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJfG+Q279TtMZcYGoyF5Z3TRuQlGc3QtGP4r7M3A7Hh u0@prt-dev-01"
+    secrets: inherit
+  deploy-dev:
+    uses: ./.github/workflows/workspace-deploy.yml
+    with:
+      ENVIRONMENT: tomp736-dev
+      REPO_REF: dev
+      TF_MODULES_REF: dev
+      ANSIBLE_MODULES_REF: dev
+      FLUX_WORKSPACE: dev
       TERRAFORM_APPLY: true
       ANSIBLE_APPLY: true
       PUBLIC_KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOJfG+Q279TtMZcYGoyF5Z3TRuQlGc3QtGP4r7M3A7Hh u0@prt-dev-01"

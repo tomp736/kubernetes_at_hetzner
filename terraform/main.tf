@@ -87,7 +87,7 @@ resource "null_resource" "udev_network_interfaces" {
   for_each = local.all_nodes
 
   depends_on = [
-    module.nodes
+    null_resource.test_connection
   ]
 
   connection {
@@ -123,7 +123,7 @@ EOT
 
   provisioner "remote-exec" {
     inline = [
-      "sudo systemctl reboot"
+      "sudo shutdown -r now"
     ]
     on_failure = continue
   }
