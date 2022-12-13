@@ -3,5 +3,3 @@
 
 - import_playbook: playbooks/bastion.yml
 - import_playbook: playbooks/etc_hosts.yml
-
-# - import_playbook: playbooks/fluxcd.yml

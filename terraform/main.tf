@@ -33,7 +33,8 @@ module "cloud_init_configs" {
   ]
   runcmd = [
     "mkdir -p /etc/ssh/sshd_config.d",
-    "echo \"Port 2222\" > /etc/ssh/sshd_config.d/90-defaults.conf"
+    "echo \"Port 2222\" > /etc/ssh/sshd_config.d/90-defaults.conf",
+    "echo \"PasswordAuthentication no\"  > /etc/ssh/sshd_config.d/90-defaults.conf"
   ]
 }
 
@@ -70,7 +71,7 @@ resource "null_resource" "test_connection" {
   }
   provisioner "remote-exec" {
     inline = [
-      "sleep 60 && cloud-init status --wait"
+      "sleep 5 && cloud-init status --wait"
     ]
     on_failure = continue
   }
@@ -120,8 +121,9 @@ EOT
       "sudo chmod 644 /etc/udev/rules.d/70-persistent-net.rules",
       "sudo udevadm control --reload-rules",
       "sudo udevadm trigger --attr-match=subsystem=net",
-      "sleep 5 && sudo shutdown -r now &"
+      "sudo shutdown -r now"
     ]
+    on_failure = continue
   }
 }
 
