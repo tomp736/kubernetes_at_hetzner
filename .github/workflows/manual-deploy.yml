@@ -8,6 +8,7 @@ jobs:
     uses: ./.github/workflows/workspace-deploy.yml
     with:
       ENVIRONMENT: ${{ github.actor }}-${{ github.ref_name }}
+      REPO_REF: ${{ github.ref_name }}
       TF_MODULES_REF: ${{ github.ref_name }}
       ANSIBLE_MODULES_REF: ${{ github.ref_name }}
       FLUX_WORKSPACE: ${{ github.ref_name }}
