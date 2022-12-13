@@ -6,7 +6,6 @@ ${~node.name} ansible_host=${node.ansible_host}
 [node:children]
 master
 worker
-haproxy
 
 [node:vars]
 %{for node in bastion_nodes~}
