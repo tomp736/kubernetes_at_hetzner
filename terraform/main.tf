@@ -117,22 +117,11 @@ EOT
   provisioner "remote-exec" {
     inline = [
       "sudo cp -f /tmp/70-persistent-net.rules /etc/udev/rules.d/70-persistent-net.rules",
-      "sudo chmod 644 /etc/udev/rules.d/70-persistent-net.rules"
+      "sudo chmod 644 /etc/udev/rules.d/70-persistent-net.rules",
+      "sudo udevadm control --reload-rules",
+      "sudo udevadm trigger --attr-match=subsystem=net",
+      "sudo shutdown -r +5"
     ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo shutdown -r now"
-    ]
-    on_failure = continue
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo shutdown -r now"
-    ]
-    on_failure = continue
   }
 }
 
