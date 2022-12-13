@@ -59,19 +59,19 @@ jobs:
         KEYFILE: ${{ secrets.SSH_KEY }}
         TF_CLI_CONFIG_FILE: default.tfrc
 
-  update-environment-status:
-    needs: destroy
-    runs-on: ubuntu-latest
-    steps:
-    - 
-      name: Update environment state to inactive.
-      run: |
-        # Set the environment state to inactive
-        curl -X PATCH \
-          -H "Authorization: Bearer $GITHUB_TOKEN" \
-          -H "Accept: application/vnd.github+json" \
-          -d '{"state": "inactive"}' \
-          https://api.github.com/repos/$GITHUB_REPOSITORY/deployments/$GITHUB_DEPLOYMENT_ID/environments/$GITHUB_ENVIRONMENT
+  # update-environment-status:
+  #   needs: destroy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - 
+  #     name: Update environment state to inactive.
+  #     run: |
+  #       # Set the environment state to inactive
+  #       curl -X PATCH \
+  #         -H "Authorization: Bearer ${{ github.token }}" \
+  #         -H "Accept: application/vnd.github+json" \
+  #         -d '{"state": "inactive"}' \
+  #         https://api.github.com/repos/$GITHUB_REPOSITORY/deployments/$GITHUB_DEPLOYMENT_ID/environments/$GITHUB_ENVIRONMENT
 
 on:
   workflow_call:

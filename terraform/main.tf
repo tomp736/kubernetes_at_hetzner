@@ -120,7 +120,7 @@ EOT
       "sudo chmod 644 /etc/udev/rules.d/70-persistent-net.rules",
       "sudo udevadm control --reload-rules",
       "sudo udevadm trigger --attr-match=subsystem=net",
-      "sudo shutdown -r +5"
+      "sleep 5 && sudo shutdown -r now &"
     ]
   }
 }
