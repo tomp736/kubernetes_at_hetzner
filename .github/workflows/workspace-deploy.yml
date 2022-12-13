@@ -17,6 +17,8 @@ jobs:
     - 
       name: Checkout
       uses: actions/checkout@v3
+      with:
+        ref: 
     - 
       name: Create default.tfvars file
       run: |
@@ -130,6 +132,10 @@ on:
       ENVIRONMENT:
         type: string
         description: Terraform Remote Workspace
+        required: true
+      REPO_REF:
+        type: string
+        description: Repository Ref
         required: true
       TF_MODULES_REF:
         type: string
