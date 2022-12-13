@@ -1,0 +1,8 @@
+---
+# file: cluster.yml
+
+- import_playbook: playbooks/k8s_nodes.yml
+- import_playbook: playbooks/k8s_master.yml
+- import_playbook: playbooks/k8s_worker.yml
+
+# - import_playbook: playbooks/fluxcd.yml
