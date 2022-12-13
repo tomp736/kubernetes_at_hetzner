@@ -12,13 +12,13 @@
           dest: /etc/cloud/templates/hosts.debian.tmpl
           line: "{{ hostvars[item]['ansible_knet']['ipv4']['address'] }} {{ hostvars[item].ansible_hostname }} "
           state: present
-        with_items: "{{ groups.nodes }}"
+        with_items: "{{ groups.all }}"
       - name: Add Private IP address of all hosts to /etc/hosts
         lineinfile:
           dest: /etc/hosts
           line: "{{ hostvars[item]['ansible_knet']['ipv4']['address'] }} {{ hostvars[item].ansible_hostname }} "
           state: present
-        with_items: "{{ groups.nodes }}"
+        with_items: "{{ groups.all }}"
 
     - name: Configure bnet /etc/hosts entries
       when: hostvars[item]['ansible_bnet'] is defined
