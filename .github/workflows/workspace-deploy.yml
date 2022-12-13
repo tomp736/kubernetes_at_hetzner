@@ -98,9 +98,7 @@ jobs:
       name: Update Ansible Ref
       run: |
         cd ./ansible
-        name="https://github.com/labrats-work/modules-ansible.git"
-        version=${{ inputs.ANSIBLE_MODULES_REF }}
-        yq -i '.collections[] |= select(.name == "https://github.com/labrats-work/modules-ansible.git").version="main"' requirements.yml
+        yq -i '.collections[] |= select(.name == "https://github.com/labrats-work/modules-ansible.git").version="${{ inputs.ANSIBLE_MODULES_REF }}"' requirements.yml
     - 
       name: Cache Ansible Galaxy Collections
       uses: actions/cache@v2
