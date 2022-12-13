@@ -99,11 +99,17 @@ jobs:
       run: |
         cd ./ansible
         yq -i '.collections[] |= select(.name == "https://github.com/labrats-work/modules-ansible.git").version="${{ inputs.ANSIBLE_MODULES_REF }}"' requirements.yml
+    - 
+      name: Cache Ansible
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.ansible
     -     
       name: Ansible Galaxy Install
       run: |
         cd ./ansible
-        ansible-galaxy install -fr requirements.yml
+        ansible-galaxy install -r requirements.yml
     - 
       name: Ansible Playbook
       run: |
@@ -147,11 +153,17 @@ jobs:
       run: |
         cd ./ansible
         yq -i '.collections[] |= select(.name == "https://github.com/labrats-work/modules-ansible.git").version="${{ inputs.ANSIBLE_MODULES_REF }}"' requirements.yml
+    - 
+      name: Cache Ansible
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.ansible
     -     
       name: Ansible Galaxy Install
       run: |
         cd ./ansible
-        ansible-galaxy install -fr requirements.yml
+        ansible-galaxy install -r requirements.yml
     - 
       name: Ansible Playbook
       run: |
