@@ -77,6 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/labrats-work/ops-images/omnibus:latest
+    if: always()
     steps:
     - 
       name: Checkout
@@ -124,22 +125,12 @@ jobs:
       run: |
         cp ansible_hosts ansible/inventory/hosts
     - 
-      name: Update Ansible Ref
-      run: |
-        cd ./ansible
-        yq -i '.collections[] |= select(.name == "https://github.com/labrats-work/modules-ansible.git").version="${{ inputs.ANSIBLE_MODULES_REF }}"' requirements.yml
-    - 
       name: Cache Ansible
       uses: actions/cache@v3
       with:
         key: ansible-${{ inputs.ANSIBLE_MODULES_REF }}
         path: |
           ~/.ansible
-    -     
-      name: Ansible Galaxy Install
-      run: |
-        cd ./ansible
-        ansible-galaxy install -r requirements.yml
     - 
       name: Ansible Playbook
       run: |
@@ -180,23 +171,13 @@ jobs:
       run: |
         cp ansible_hosts ansible/inventory/hosts
     - 
-      name: Update Ansible Ref
-      run: |
-        cd ./ansible
-        yq -i '.collections[] |= select(.name == "https://github.com/labrats-work/modules-ansible.git").version="${{ inputs.ANSIBLE_MODULES_REF }}"' requirements.yml
-    - 
       name: Cache Ansible
       uses: actions/cache@v3
       with:
         key: ansible-${{ inputs.ANSIBLE_MODULES_REF }}
         path: |
           ~/.ansible
-    -     
-      name: Ansible Galaxy Install
-      run: |
-        cd ./ansible
-        ansible-galaxy install -r requirements.yml
-    - 
+    -
       name: Ansible Playbook
       run: |
         eval `ssh-agent`
