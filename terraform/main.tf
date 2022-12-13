@@ -127,6 +127,13 @@ EOT
     ]
     on_failure = continue
   }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo shutdown -r now"
+    ]
+    on_failure = continue
+  }
 }
 
 resource "local_file" "ansible_inventory" {
