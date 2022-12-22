@@ -8,7 +8,7 @@
   
   tasks:  
   - ansible.builtin.import_role:
-      name: labrats_work.modules_ansible.kubernetes_worker
+      name: labrats_work.modules_ansible.kubernetes_init
     vars:
       nodetype: worker
       master_node: "{{ hostvars[groups['master'][0]]['ansible_hostname'] }}"
