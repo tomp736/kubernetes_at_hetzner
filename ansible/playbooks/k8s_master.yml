@@ -9,5 +9,5 @@
   tasks:      
   - ansible.builtin.import_role:
       name: labrats_work.modules_ansible.kubernetes_init
-      vars:
-        nodetype: master
+    vars:
+      nodetype: master
