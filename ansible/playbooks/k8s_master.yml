@@ -31,7 +31,6 @@
         networking:
           serviceSubnet: "{{ kubernetes['serviceSubnet'] }}"
           podSubnet: "{{ kubernetes['podSubnet'] }}"
-          dnsDomain: cluster.local
         kubernetesVersion: "{{ kubernetes['kubernetesVersion'] }}"
         controlPlaneEndpoint: "{{ ansible_facts[kubernetes_iface]['ipv4']['address'] }}:{{ kubernetes['bindPort'] }}"
         apiServer:
@@ -40,5 +39,3 @@
           timeoutForControlPlane: 10m0s
         certificatesDir: "/etc/kubernetes/pki"
         clusterName: "{{ kubernetes['clusterName'] }}"
-        controllerManager: {}
-        scheduler: {}
