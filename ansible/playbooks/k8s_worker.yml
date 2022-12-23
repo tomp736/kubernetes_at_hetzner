@@ -10,18 +10,36 @@
   - ansible.builtin.import_role:
       name: labrats_work.modules_ansible.kubernetes_init
     vars:
-      nodetype: worker
-      discovery: "{{ hostvars[groups['master'][0]]['discovery'] }}"
-      kubeadm_join:
-        nodeRegistration:
-          name: "{{ ansible_facts['fqdn'] }}"
-          criSocket: "unix:///var/run/containerd/containerd.sock"
-          ignorePreflightErrors: 
-            - Swap
-            - NumCPU
-            - IsPrivilegedUser  
-          taints: []
-        discovery:
-          tlsBootstrapToken: "{{ hostvars[groups['master'][0]]['discovery']['tlsBootstrapToken'] }}"
-          file: 
-            kubeConfigPath: /root/discovery.conf
+      kubeadm: join
+      yaml_configs:
+        - 
+          apiVersion: kubeadm.k8s.io/v1beta3
+          kind: JoinConfiguration
+          nodeRegistration:
+            name: "{{ ansible_facts['fqdn'] }}"
+            criSocket: "unix:///var/run/containerd/containerd.sock"
+            ignorePreflightErrors: 
+              - Swap
+              - NumCPU
+              - IsPrivilegedUser  
+            taints: []
+          discovery:
+            bootstrapToken:
+              token: "{{ hostvars[groups['master'][0]]['join_token'] }}"
+              apiServerEndpoint: "{{ hostvars[groups['master'][0]]['join_endpoint'] }}"
+              caCertHashes: 
+              - "{{ hostvars[groups['master'][0]]['join_cert_hash'] }}"
+        -
+          apiVersion: kubelet.config.k8s.io/v1beta1
+          kind: KubeletConfiguration
+          eventRecordQPS: 0
+          protectKernelDefaults: true
+          tlsCipherSuites:
+            - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+            - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+            - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+            - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+            - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+            - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+            - TLS_RSA_WITH_AES_256_GCM_SHA384
+            - TLS_RSA_WITH_AES_128_GCM_SHA256
