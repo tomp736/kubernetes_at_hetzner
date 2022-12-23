@@ -9,7 +9,7 @@ worker
 
 [node:vars]
 %{for node in bastion_nodes~}
-ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadmin@${node.ansible_host} -o Port=2222 -o ForwardAgent=yes -o ControlMaster=auto -o ControlPersist=30m -W %h:%p"'
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadmin@${node.ansible_host} -o Port=2222 -o ForwardAgent=yes -W %h:%p"'
 %{~endfor}
 
 [master]
