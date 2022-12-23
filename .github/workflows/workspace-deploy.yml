@@ -70,7 +70,9 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: terraform-output
-        path: terraform/ansible_hosts
+        path: |
+          terraform/ansible_hosts_site
+          terraform/ansible_hosts_cluster
 
   ansible-init:
     name: 'ansible-init'
@@ -123,7 +125,7 @@ jobs:
     - 
       name: Copy Ansible Hosts
       run: |
-        cp ansible_hosts ansible/inventory/hosts
+        cp ansible_hosts_site ansible/inventory/site
     - 
       name: Cache Ansible
       uses: actions/cache@v3
@@ -137,7 +139,7 @@ jobs:
         eval `ssh-agent`
         echo "${KEYFILE}" | ssh-add -
         cd ./ansible
-        ansible-playbook -i inventory/hosts site.yml
+        ansible-playbook -i inventory/site site.yml
       env:
         KEYFILE: ${{ secrets.SSH_KEY }}
         FLUX_INIT_OWNER: tomp736
@@ -169,7 +171,7 @@ jobs:
     - 
       name: Copy Ansible Hosts
       run: |
-        cp ansible_hosts ansible/inventory/hosts
+        cp ansible_hosts_cluster ansible/inventory/cluster
     - 
       name: Cache Ansible
       uses: actions/cache@v3
@@ -183,7 +185,7 @@ jobs:
         eval `ssh-agent`
         echo "${KEYFILE}" | ssh-add -
         cd ./ansible
-        ansible-playbook -i inventory/hosts cluster.yml
+        ansible-playbook -i inventory/cluster cluster.yml
       env:
         KEYFILE: ${{ secrets.SSH_KEY }}
         FLUX_INIT_OWNER: tomp736

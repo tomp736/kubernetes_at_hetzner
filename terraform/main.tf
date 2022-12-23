@@ -54,8 +54,26 @@ module "worker_node_group" {
   }
 }
 
-resource "local_file" "ansible_inventory" {
-  content = templatefile("files/templates/hosts.tftpl", {
+resource "local_file" "ansible_inventory_site" {
+  content = templatefile("files/templates/site.tftpl", {
+    bastion_nodes = [for node in module.bastion_node_group.nodes : {
+      name         = node.name,
+      ansible_host = node.ipv4_address
+    }]
+    master_nodes = [for node in module.master_node_group.nodes : {
+      name         = node.name,
+      ansible_host = node.ipv4_address
+    }]
+    worker_nodes = [for node in module.worker_node_group.nodes : {
+      name         = node.name,
+      ansible_host = node.ipv4_address
+    }]
+  })
+  filename = "ansible_hosts_site"
+}
+
+resource "local_file" "ansible_inventory_cluster" {
+  content = templatefile("files/templates/cluster.tftpl", {
     bastion_nodes = [for node in module.bastion_node_group.nodes : {
       name         = node.name,
       ansible_host = node.ipv4_address
@@ -69,5 +87,5 @@ resource "local_file" "ansible_inventory" {
       ansible_host = node.networks[module.networks["bnet"].hetzner_network.id].ip
     }]
   })
-  filename = "ansible_hosts"
+  filename = "ansible_hosts_cluster"
 }
