@@ -5,4 +5,5 @@ terraform.*
 .deploy
 
 terraform/ansible_hosts
+ansible/**/hosts
 !ansible/inventory/README.md
