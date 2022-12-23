@@ -127,6 +127,11 @@ jobs:
       run: |
         cp ansible_hosts_site ansible/inventory/site
     - 
+      name: Update Ansible Ref
+      run: |
+        cd ./ansible
+        yq -i '.collections[] |= select(.name == "https://github.com/labrats-work/modules-ansible.git").version="${{ inputs.ANSIBLE_MODULES_REF }}"' requirements.yml
+    - 
       name: Cache Ansible
       uses: actions/cache@v3
       with:
@@ -172,6 +177,11 @@ jobs:
       name: Copy Ansible Hosts
       run: |
         cp ansible_hosts_cluster ansible/inventory/cluster
+    - 
+      name: Update Ansible Ref
+      run: |
+        cd ./ansible
+        yq -i '.collections[] |= select(.name == "https://github.com/labrats-work/modules-ansible.git").version="${{ inputs.ANSIBLE_MODULES_REF }}"' requirements.yml
     - 
       name: Cache Ansible
       uses: actions/cache@v3
