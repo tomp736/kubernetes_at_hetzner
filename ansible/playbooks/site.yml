@@ -22,7 +22,7 @@
       # - name: Apply DevSec OS Hardening
       #   ansible.builtin.import_role:
       #     name: devsec.hardening.os_hardening
----
+      
 - name: Configure DevSec Hardening
   hosts: master:worker
   remote_user: sysadmin
