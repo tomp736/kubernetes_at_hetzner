@@ -93,7 +93,7 @@ jobs:
       name: Cache Ansible
       uses: actions/cache@v3
       with:
-        key: ansible-${{ hashFiles('**/requirements.yml') }}
+        key: ansible-${{ github.run_id }}
         path: |
           ~/.ansible
     -     
@@ -135,7 +135,7 @@ jobs:
       name: Cache Ansible
       uses: actions/cache@v3
       with:
-        key: ansible-${{ hashFiles('**/requirements.yml') }}
+        key: ansible-${{ github.run_id }}
         path: |
           ~/.ansible
     - 
@@ -186,7 +186,7 @@ jobs:
       name: Cache Ansible
       uses: actions/cache@v3
       with:
-        key: ansible-${{ hashFiles('**/requirements.yml') }}
+        key: ansible-${{ github.run_id }}
         path: |
           ~/.ansible
     -

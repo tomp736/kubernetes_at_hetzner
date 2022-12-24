@@ -1,0 +1,57 @@
+- name: Configure Node Exporter
+  hosts: nodeexporter
+  remote_user: sysadmin
+  become: yes
+  
+  collections:
+  - labrats_work.modules_ansible
+
+  tasks:
+    - name: Configure Node Exporter
+      block:
+      - name: Configure Node Exporter as systemd unit.
+        ansible.builtin.import_role:
+          name: labrats_work.modules_ansible.systemd_node_exporter
+        vars:
+          version: "1.5.0"
+          distro: "linux-amd64"
+
+- name: Configure Metrics Services
+  hosts: metrics
+  remote_user: sysadmin
+  become: yes
+  
+  collections:
+  - labrats_work.modules_ansible
+
+  tasks:
+    - name: Configure Docker and Services
+      block:
+
+      - name: Configure Docker.
+        ansible.builtin.import_role:
+          name: labrats_work.modules_ansible.docker
+
+      - name: Configure Prometheus as docker container.
+        ansible.builtin.import_role:
+          name: labrats_work.modules_ansible.docker_prometheus
+        vars:
+          network_mode: host
+          prometheus_config:
+            global:
+              scrape_interval: 15s
+              evaluation_interval: 15s
+
+            scrape_configs:
+              - job_name: prometheus
+                static_configs:
+                  - targets: 
+                    - 'localhost:9090'
+
+              - job_name: 'site'
+                static_configs:
+                - targets: "{{ groups.nodeexporter | map('regex_replace', '$', ':9100') | list }}"
+
+      - name: Configure Grafana as docker container.
+        ansible.builtin.import_role:
+          name: labrats_work.modules_ansible.docker_grafana
