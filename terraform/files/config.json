@@ -1,6 +1,14 @@
 {
     "networks": [
         {
+            "id": "mnet",
+            "name": "mnet",
+            "ip_range": "10.97.0.0/16",
+            "subnet_ranges": [
+                "10.97.0.0/24"
+            ]
+        },
+        {
             "id": "bnet",
             "name": "bnet",
             "ip_range": "10.98.0.0/16",
@@ -21,6 +29,10 @@
         {
             "id": "c0m0",
             "networks": [
+                { 
+                    "id" : "mnet",
+                    "ip" : ""
+                },
                 { 
                     "id" : "bnet",
                     "ip" : ""
@@ -43,6 +55,10 @@
             "id": "c0w0",
             "networks": [
                 { 
+                    "id" : "mnet",
+                    "ip" : ""
+                },
+                { 
                     "id" : "bnet",
                     "ip" : ""
                 },
@@ -61,39 +77,43 @@
             "ssh_port": "2222"
         },
         {
-            "id": "c0p0",
+            "id": "bastion",
             "networks": [
+                { 
+                    "id" : "mnet",
+                    "ip" : ""
+                },
                 { 
                     "id" : "bnet",
                     "ip" : ""
-                },
-                {
-                    "id" : "knet",
-                    "ip" : ""
                 }
             ],
-            "name": "c0p0",
+            "name": "bastion",
             "location": "nbg1",
             "image": "ubuntu-22.04",
-            "server_type": "cx21",
-            "nodetype": "haproxy",
+            "server_type": "cx11",
+            "nodetype": "bastion",
             "network_zone": "eu-central",
             "ssh_user": "sysadmin",
             "ssh_port": "2222"
         },
         {
-            "id": "c0b0",
+            "id": "metrics",
             "networks": [
+                { 
+                    "id" : "mnet",
+                    "ip" : ""
+                },
                 { 
                     "id" : "bnet",
                     "ip" : ""
                 }
             ],
-            "name": "c0b0",
+            "name": "metrics",
             "location": "nbg1",
             "image": "ubuntu-22.04",
             "server_type": "cx11",
-            "nodetype": "bastion",
+            "nodetype": "metrics",
             "network_zone": "eu-central",
             "ssh_user": "sysadmin",
             "ssh_port": "2222"

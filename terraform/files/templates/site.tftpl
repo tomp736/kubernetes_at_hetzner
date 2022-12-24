@@ -1,5 +1,16 @@
+[nodeexporter:children]
+bastion
+metrics
+master
+worker
+
 [bastion]
 %{for node in bastion_nodes~}
+${~node.name} ansible_host=${node.ansible_host}
+%{~endfor}
+
+[metrics]
+%{for node in metrics_nodes~}
 ${~node.name} ansible_host=${node.ansible_host}
 %{~endfor}
 

@@ -12,6 +12,11 @@ worker
 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadmin@${node.ansible_host} -o StrictHostKeyChecking=no -o Port=2222 -o ForwardAgent=yes -W %h:%p"'
 %{~endfor}
 
+[metrics]
+%{for node in metrics_nodes~}
+${~node.name} ansible_host=${node.ansible_host}
+%{~endfor}
+
 [master]
 %{for node in master_nodes~}
 ${~node.name} ansible_host=${node.ansible_host}
