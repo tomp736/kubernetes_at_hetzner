@@ -77,6 +77,56 @@
             "ssh_port": "2222"
         },
         {
+            "id": "c0w1",
+            "networks": [
+                { 
+                    "id" : "mnet",
+                    "ip" : ""
+                },
+                { 
+                    "id" : "bnet",
+                    "ip" : ""
+                },
+                {
+                    "id" : "knet",
+                    "ip" : ""
+                }
+            ],
+            "name": "c0w1",
+            "location": "nbg1",
+            "image": "ubuntu-22.04",
+            "server_type": "cx21",
+            "nodetype": "worker",
+            "network_zone": "eu-central",
+            "ssh_user": "sysadmin",
+            "ssh_port": "2222"
+        },
+        {
+            "id": "c0w2",
+            "networks": [
+                { 
+                    "id" : "mnet",
+                    "ip" : ""
+                },
+                { 
+                    "id" : "bnet",
+                    "ip" : ""
+                },
+                {
+                    "id" : "knet",
+                    "ip" : ""
+                }
+            ],
+            "name": "c0w2",
+            "location": "nbg1",
+            "image": "ubuntu-22.04",
+            "server_type": "cx21",
+            "nodetype": "worker",
+            "network_zone": "eu-central",
+            "ssh_user": "sysadmin",
+            "ssh_port": "2222"
+        },
+        {
             "id": "bastion",
             "networks": [
                 { 
