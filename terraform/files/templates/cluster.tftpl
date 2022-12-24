@@ -1,6 +1,6 @@
 [bastion]
 %{for node in bastion_nodes~}
-${~node.name} ansible_host=${node.ansible_host}
+${node.name} ansible_host=${node.ansible_host}
 %{~endfor}
 
 [node:children]
@@ -14,15 +14,15 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadm
 
 [metrics]
 %{for node in metrics_nodes~}
-${~node.name} ansible_host=${node.ansible_host}
+${node.name} ansible_host=${node.ansible_host}
 %{~endfor}
 
 [master]
 %{for node in master_nodes~}
-${~node.name} ansible_host=${node.ansible_host}
+${node.name} ansible_host=${node.ansible_host}
 %{~endfor}
 
 [worker]
 %{for node in worker_nodes~}
-${~node.name} ansible_host=${node.ansible_host}
+${node.name} ansible_host=${node.ansible_host}
 %{~endfor}
