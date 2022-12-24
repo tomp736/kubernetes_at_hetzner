@@ -5,21 +5,21 @@ master
 worker
 
 [bastion]
-%{for node in bastion_nodes~}
+%{for node in bastion_nodes}
 ${node.name} ansible_host=${node.ansible_host}
-%{~endfor}
+%{endfor~}
 
 [metrics]
-%{for node in metrics_nodes~}
+%{for node in metrics_nodes}
 ${node.name} ansible_host=${node.ansible_host}
-%{~endfor}
+%{endfor~}
 
 [master]
-%{for node in master_nodes~}
+%{for node in master_nodes}
 ${node.name} ansible_host=${node.ansible_host}
-%{~endfor}
+%{endfor~}
 
 [worker]
-%{for node in worker_nodes~}
+%{for node in worker_nodes}
 ${node.name} ansible_host=${node.ansible_host}
-%{~endfor}
+%{endfor~}

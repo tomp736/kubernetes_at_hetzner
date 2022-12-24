@@ -1,7 +1,7 @@
 [bastion]
-%{for node in bastion_nodes~}
+%{for node in bastion_nodes}
 ${node.name} ansible_host=${node.ansible_host}
-%{~endfor}
+%{endfor~}
 
 [node:children]
 master
@@ -10,19 +10,19 @@ worker
 [node:vars]
 %{for node in bastion_nodes~}
 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadmin@${node.ansible_host} -o StrictHostKeyChecking=no -o Port=2222 -o ForwardAgent=yes -W %h:%p"'
-%{~endfor}
+%{endfor~}
 
 [metrics]
 %{for node in metrics_nodes~}
 ${node.name} ansible_host=${node.ansible_host}
-%{~endfor}
+%{endfor~}
 
 [master]
 %{for node in master_nodes~}
 ${node.name} ansible_host=${node.ansible_host}
-%{~endfor}
+%{endfor~}
 
 [worker]
 %{for node in worker_nodes~}
 ${node.name} ansible_host=${node.ansible_host}
-%{~endfor}
+%{endfor~}
