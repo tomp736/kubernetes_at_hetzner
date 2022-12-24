@@ -44,6 +44,8 @@ jobs:
               fi
           done
 
+          cat envs.json
+
           TODELETE=$(jq -rc '[.[].name]' envs.json)
 
           echo $TODELETE
