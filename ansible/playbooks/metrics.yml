@@ -1,5 +1,5 @@
 - name: Configure Node Exporter
-  hosts: nodeexporter
+  hosts: site
   remote_user: sysadmin
   become: yes
   
@@ -17,7 +17,7 @@
           distro: "linux-amd64"
 
 - name: Configure Metrics Services
-  hosts: metrics
+  hosts: s0m0
   remote_user: sysadmin
   become: yes
   
@@ -50,7 +50,7 @@
 
               - job_name: 'site'
                 static_configs:
-                - targets: "{{ groups.nodeexporter | map('regex_replace', '$', ':9100') | list }}"
+                - targets: "{{ groups.site | map('regex_replace', '$', ':9100') | list }}"
 
       - name: Configure Grafana as docker container.
         ansible.builtin.import_role:

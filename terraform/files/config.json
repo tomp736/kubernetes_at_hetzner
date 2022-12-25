@@ -27,7 +27,7 @@
     ],
     "nodes": [
         {
-            "id": "c0m0",
+            "id": "s0c0m0",
             "networks": [
                 { 
                     "id" : "mnet",
@@ -42,7 +42,7 @@
                     "ip" : ""
                 }
             ],
-            "name": "c0m0",
+            "name": "s0c0m0",
             "location": "nbg1",
             "image": "ubuntu-22.04",
             "server_type": "cx21",
@@ -52,7 +52,7 @@
             "ssh_port": "2222"
         },
         {
-            "id": "c0w0",
+            "id": "s0c0w0",
             "networks": [
                 { 
                     "id" : "mnet",
@@ -67,7 +67,7 @@
                     "ip" : ""
                 }
             ],
-            "name": "c0w0",
+            "name": "s0c0w0",
             "location": "nbg1",
             "image": "ubuntu-22.04",
             "server_type": "cx21",
@@ -77,7 +77,7 @@
             "ssh_port": "2222"
         },
         {
-            "id": "c0w1",
+            "id": "s0c0w1",
             "networks": [
                 { 
                     "id" : "mnet",
@@ -92,7 +92,7 @@
                     "ip" : ""
                 }
             ],
-            "name": "c0w1",
+            "name": "s0c0w1",
             "location": "nbg1",
             "image": "ubuntu-22.04",
             "server_type": "cx21",
@@ -102,7 +102,7 @@
             "ssh_port": "2222"
         },
         {
-            "id": "c0w2",
+            "id": "s0c0w2",
             "networks": [
                 { 
                     "id" : "mnet",
@@ -117,7 +117,7 @@
                     "ip" : ""
                 }
             ],
-            "name": "c0w2",
+            "name": "s0c0w2",
             "location": "nbg1",
             "image": "ubuntu-22.04",
             "server_type": "cx21",
@@ -127,7 +127,7 @@
             "ssh_port": "2222"
         },
         {
-            "id": "bastion",
+            "id": "s0b0",
             "networks": [
                 { 
                     "id" : "mnet",
@@ -138,7 +138,7 @@
                     "ip" : ""
                 }
             ],
-            "name": "bastion",
+            "name": "s0b0",
             "location": "nbg1",
             "image": "ubuntu-22.04",
             "server_type": "cx11",
@@ -148,7 +148,7 @@
             "ssh_port": "2222"
         },
         {
-            "id": "metrics",
+            "id": "s0m0",
             "networks": [
                 { 
                     "id" : "mnet",
@@ -159,7 +159,7 @@
                     "ip" : ""
                 }
             ],
-            "name": "metrics",
+            "name": "s0m0",
             "location": "nbg1",
             "image": "ubuntu-22.04",
             "server_type": "cx11",
