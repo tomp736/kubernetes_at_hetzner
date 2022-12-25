@@ -8,6 +8,6 @@
 
   tasks:  
   - ansible.builtin.import_role:
-      name: labrats_work.modules_ansible.haproxy
+      name: labrats_work.modules_ansible.systemd_haproxy
     vars:
       haproxy_config: "{{ lookup('ansible.builtin.template', 'files/haproxy/haproxy.cfg.j2') }}"
