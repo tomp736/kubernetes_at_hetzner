@@ -1,6 +1,6 @@
 ---
 - name: Bastion Hardening
-  hosts: bastion
+  hosts: s0b0
   remote_user: sysadmin
   become: yes
   
@@ -24,7 +24,7 @@
       #     name: devsec.hardening.os_hardening
       
 - name: Site Hardening
-  hosts: all,!bastion
+  hosts: site,!s0b0
   remote_user: sysadmin
   become: yes
   
@@ -48,7 +48,7 @@
       #     name: devsec.hardening.os_hardening
 
 - name: Configure /etc/hosts entries
-  hosts: all
+  hosts: site
   remote_user: sysadmin
   become: yes
 
@@ -61,13 +61,13 @@
           dest: /etc/cloud/templates/hosts.debian.tmpl
           line: "{{ hostvars[item]['ansible_knet']['ipv4']['address'] }} {{ hostvars[item].ansible_hostname }} "
           state: present
-        with_items: "{{ groups.all }}"
+        with_items: "{{ groups.site }}"
       - name: Add Private IP address of all hosts to /etc/hosts
         lineinfile:
           dest: /etc/hosts
           line: "{{ hostvars[item]['ansible_knet']['ipv4']['address'] }} {{ hostvars[item].ansible_hostname }} "
           state: present
-        with_items: "{{ groups.all }}"
+        with_items: "{{ groups.site }}"
 
     - name: Configure bnet /etc/hosts entries
       when: hostvars[item]['ansible_bnet'] is defined
@@ -77,13 +77,13 @@
           dest: /etc/cloud/templates/hosts.debian.tmpl
           line: "{{ hostvars[item]['ansible_bnet']['ipv4']['address'] }} {{ hostvars[item].ansible_hostname }} "
           state: present
-        with_items: "{{ groups.all }}"
+        with_items: "{{ groups.site }}"
       - name: Add Private IP address of all hosts to /etc/hosts
         lineinfile:
           dest: /etc/hosts
           line: "{{ hostvars[item]['ansible_bnet']['ipv4']['address'] }} {{ hostvars[item].ansible_hostname }} "
           state: present
-        with_items: "{{ groups.all }}"
+        with_items: "{{ groups.site }}"
 
     - name: Configure bnet /etc/hosts entries
       when: hostvars[item]['ansible_mnet'] is defined
@@ -93,10 +93,10 @@
           dest: /etc/cloud/templates/hosts.debian.tmpl
           line: "{{ hostvars[item]['ansible_mnet']['ipv4']['address'] }} {{ hostvars[item].ansible_hostname }} "
           state: present
-        with_items: "{{ groups.all }}"
+        with_items: "{{ groups.site }}"
       - name: Add Private IP address of all hosts to /etc/hosts
         lineinfile:
           dest: /etc/hosts
           line: "{{ hostvars[item]['ansible_mnet']['ipv4']['address'] }} {{ hostvars[item].ansible_hostname }} "
           state: present
-        with_items: "{{ groups.all }}"
+        with_items: "{{ groups.site }}"

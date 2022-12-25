@@ -4,6 +4,7 @@ terraform.*
 *.tfvars
 .deploy
 
-terraform/ansible_hosts
-ansible/**/hosts
+terraform/ansible_hosts_*
+ansible/inventory/site
+ansible/inventory/cluster
 !ansible/inventory/README.md
