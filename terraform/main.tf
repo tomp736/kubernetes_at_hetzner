@@ -70,6 +70,22 @@ module "metrics_node_group" {
   }
 }
 
+module "haproxy_node_group" {
+  source = "./modules/node_group"
+  depends_on = [
+    module.bastion_node_group
+  ]
+  nodes        = local.config_nodes_haproxy
+  bastion_host = values(module.bastion_node_group.nodes)[0].ipv4_address
+  public_key   = var.public_key
+  networks_map = { for config_network in local.config_networks : config_network.id =>
+    {
+      name       = config_network.id,
+      hetzner_id = module.networks[config_network.id].hetzner_network.id
+    }
+  }
+}
+
 resource "local_file" "ansible_inventory_site" {
   content = templatefile("files/templates/site.tftpl", {
     bastion_nodes = [for node in module.bastion_node_group.nodes : {
@@ -85,6 +101,10 @@ resource "local_file" "ansible_inventory_site" {
       ansible_host = node.ipv4_address
     }]
     metrics_nodes = [for node in module.metrics_node_group.nodes : {
+      name         = node.name,
+      ansible_host = node.ipv4_address
+    }]
+    haproxy_nodes = [for node in module.haproxy_node_group.nodes : {
       name         = node.name,
       ansible_host = node.ipv4_address
     }]
@@ -109,6 +129,10 @@ resource "local_file" "ansible_inventory_cluster" {
     metrics_nodes = [for node in module.metrics_node_group.nodes : {
       name         = node.name,
       ansible_host = node.networks[module.networks["bnet"].hetzner_network.id].ip
+    }]
+    haproxy_nodes = [for node in module.haproxy_node_group.nodes : {
+      name         = node.name,
+      ansible_host = node.ipv4_address
     }]
   })
   filename = "ansible_hosts_cluster"

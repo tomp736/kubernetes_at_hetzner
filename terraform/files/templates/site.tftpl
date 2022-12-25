@@ -5,6 +5,9 @@ ${node.name} ansible_host=${node.ansible_host}
 %{~for node in metrics_nodes}
 ${node.name} ansible_host=${node.ansible_host}
 %{~endfor}
+%{~for node in haproxy_nodes}
+${node.name} ansible_host=${node.ansible_host}
+%{~endfor}
 %{~for node in master_nodes}
 ${node.name} ansible_host=${node.ansible_host}
 %{~endfor}
