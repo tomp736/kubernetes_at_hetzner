@@ -1,5 +1,5 @@
 - name: Configure Worker
-  hosts: haproxy
+  hosts: s0haproxy
   remote_user: sysadmin
   become: yes
 
@@ -9,3 +9,5 @@
   tasks:  
   - ansible.builtin.import_role:
       name: labrats_work.modules_ansible.haproxy
+    vars:
+      haproxy_config: "{{ lookup('ansible.builtin.template', 'files/haproxy/haproxy.cfg.j2') }}"
