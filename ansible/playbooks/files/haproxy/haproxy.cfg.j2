@@ -58,7 +58,7 @@ backend kubernetes-http
     balance roundrobin
     option forwardfor
     {% for i in range(kubernetes.http | length) -%}
-    server k8s-http-{{ i }} {{ kubernetes.http[i] }}:80 check
+    server k8s-http-{{ i }} {{ kubernetes.http[i] }}:32080 check
     {% endfor %}
 
 frontend kubernetes-https
@@ -72,7 +72,7 @@ backend kubernetes-https
     balance roundrobin
     option ssl-hello-chk
     {% for i in range(kubernetes.https | length) -%}
-    server k8s-https-{{ i }} {{ kubernetes.https[i] }}:443 check
+    server k8s-https-{{ i }} {{ kubernetes.https[i] }}:32443 check
     {% endfor %}
 
 listen stats
