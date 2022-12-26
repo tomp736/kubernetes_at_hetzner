@@ -1,6 +1,7 @@
 [site:children]
 bastion
 metrics
+haproxy
 cluster
 
 [bastion]
@@ -19,7 +20,6 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadm
 %{~endfor}
 
 [cluster:children]
-haproxy
 master
 worker
 
