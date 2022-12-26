@@ -34,35 +34,50 @@ defaults
   errorfile 503 /etc/haproxy/errors/503.http
   errorfile 504 /etc/haproxy/errors/504.http
 
-#################################
-# FRONTENDS
-#################################
+frontend kubernetes-api
+    bind *:6443
+    mode tcp
+    option tcplog
+    default_backend kubernetes-api
 
-#################################
-# FRONTEND:80 
-#################################
-frontend fe_http
+backend kubernetes-api
+    mode tcp
+    balance roundrobin
+    option ssl-hello-chk
+    {% for i in range(kubernetes.api | length) -%}
+    server k8s-api-{{ i }} {{ kubernetes.api[i] }}:6443 check
+    {% endfor %}
+
+frontend kubernetes-http
+    mode http
+    option httplog
+    default_backend kubernetes-http
+
+backend kubernetes-http
+    mode http
+    balance roundrobin
+    option forwardfor
+    {% for i in range(kubernetes.http | length) -%}
+    server k8s-http-{{ i }} {{ kubernetes.http[i] }}:80 check
+    {% endfor %}
+
+frontend kubernetes-https
+    bind *:443
+    mode tcp
+    option tcplog
+    default_backend kubernetes-https
+
+backend kubernetes-https
+    mode tcp
+    balance roundrobin
+    option ssl-hello-chk
+    {% for i in range(kubernetes.https | length) -%}
+    server k8s-https-{{ i }} {{ kubernetes.https[i] }}:443 check
+    {% endfor %}
+
+listen stats
+  bind :9999
   mode http
-  bind *:80
-
-  default_backend no-match
-# FRONTEND:443
-frontend fe_https
-  mode tcp
-  bind *:443
-
-  default_backend no-match
-
-backend ssh_per_ip_connections
-  stick-table type ip size 1m expire 1m store conn_cur,conn_rate(1m)
-
-backend no-match
-  mode http
-  http-request deny deny_status 400
-
-# listen stats
-#   bind :9999
-#   mode http
-#   stats enable
-#   stats hide-version
-#   stats uri /stats
+  stats enable
+  stats hide-version
+  stats uri /stats

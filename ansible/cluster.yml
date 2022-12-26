@@ -2,4 +2,5 @@
 # file: cluster.yml
 
 - import_playbook: playbooks/cluster.yml
+- import_playbook: playbooks/haproxy.yml
 - import_playbook: playbooks/fluxcd.yml
