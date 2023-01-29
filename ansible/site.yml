@@ -2,4 +2,4 @@
 # file: site.yml
 
 - import_playbook: playbooks/site.yml
-- import_playbook: playbooks/metrics.yml
+# - import_playbook: playbooks/metrics.yml
