@@ -1,122 +1,120 @@
-- name: Configure Nodes
+- name: Initialize cluster nodes.
   hosts: cluster
   remote_user: sysadmin
   become: yes
 
-  collections:
-  - labrats_work.modules_ansible
-  
-  tasks:
+  tasks: 
+
     - name: Configure Kubernetes Dependencies
       block:
         - name: Install Containerd
           ansible.builtin.import_role:
             name: labrats_work.modules_ansible.containerd
-        - name: Install OpenISCI
-          ansible.builtin.import_role:
-            name: labrats_work.modules_ansible.open_isci
-        - name: Install Kubernetes Packages
-          ansible.builtin.import_role:
-            name: labrats_work.modules_ansible.kubernetes_node
 
-- name: Configure Masters
+        - name: Install Helm
+          ansible.builtin.import_role:
+            name: labrats_work.modules_ansible.helm
+
+    - name: Install Kubernetes Node Compenents
+      ansible.builtin.import_role:
+        name: labrats_work.modules_ansible.kubernetes_node
+
+- name: Initialize master node.
   hosts: master
   remote_user: sysadmin
   become: yes
 
-  collections:
-  - labrats_work.modules_ansible
-  
-  vars:
-    kubernetes_init:
-      clusterName: c0
-      kubernetesVersion: "1.26.0"
-      serviceSubnet: "10.96.0.0/12"
-      podSubnet: "10.244.0.0/16"
-    calico_init:
-      ipv4pool_cidr: "10.244.0.0/16"
+  tasks: 
 
-  tasks:
+    - name: Configure Node as Master
+      become: yes
+      ansible.builtin.import_role:
+        name: labrats_work.modules_ansible.kubernetes_init
+      vars:
+        kubeadm: init
+        yaml_configs:
+          - 
+            apiVersion: kubeadm.k8s.io/v1beta3
+            kind: InitConfiguration
+            nodeRegistration:
+              taints: null
+              name: "{{ ansible_facts['fqdn'] }}"
+              criSocket: "unix:///var/run/containerd/containerd.sock"
+              ignorePreflightErrors:
+                - Swap
+                - NumCPU
+                - IsPrivilegedUser
+            localAPIEndpoint:
+              advertiseAddress: "{{ ansible_facts[kubernetes_init['iface_name']]['ipv4']['address'] }}"
+              bindPort: 6443
+          - 
+            apiVersion: kubeadm.k8s.io/v1beta3
+            kind: ClusterConfiguration
+            etcd:
+              local:
+                dataDir: /var/lib/etcd
+            networking:
+              serviceSubnet: "{{ kubernetes_init['serviceSubnet'] }}"
+              podSubnet: "{{ kubernetes_init['podSubnet'] }}"
+              dnsDomain: cluster.local
+            kubernetesVersion: "{{ kubernetes_init['kubernetesVersion'] }}"
+            controlPlaneEndpoint: "{{ ansible_facts[kubernetes_init['iface_name']]['ipv4']['address'] }}:6443"
+            apiServer:
+              certSANs:
+              - "{{ ansible_facts['fqdn'] }}"
+              timeoutForControlPlane: 10m0s
+            certificatesDir: "/etc/kubernetes/pki"
+            clusterName: "{{ kubernetes_init['clusterName'] }}"
+            controllerManager: {}
+            scheduler: {}          
+          - 
+            apiVersion: kubelet.config.k8s.io/v1beta1
+            kind: KubeletConfiguration
+            eventRecordQPS: 0
+            protectKernelDefaults: true
+            tlsCipherSuites:
+              - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+              - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+              - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+              - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+              - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+              - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+              - TLS_RSA_WITH_AES_256_GCM_SHA384
+              - TLS_RSA_WITH_AES_128_GCM_SHA256
 
-  # Kubeadm Init
-  - ansible.builtin.import_role:
-      name: labrats_work.modules_ansible.kubernetes_init
-    vars:
-      kubeadm: init
-      yaml_configs:
-        - 
-          apiVersion: kubeadm.k8s.io/v1beta3
-          kind: InitConfiguration
-          nodeRegistration:
-            taints: null
-            name: "{{ ansible_facts['fqdn'] }}"
-            criSocket: "unix:///var/run/containerd/containerd.sock"
-            ignorePreflightErrors:
-              - Swap
-              - NumCPU
-              - IsPrivilegedUser
-          localAPIEndpoint:
-            advertiseAddress: "{{ ansible_facts['knet']['ipv4']['address'] }}"
-            bindPort: 6443
-        - 
-          apiVersion: kubeadm.k8s.io/v1beta3
-          kind: ClusterConfiguration
-          etcd:
-            local:
-              dataDir: /var/lib/etcd
-          networking:
-            serviceSubnet: "{{ kubernetes_init['serviceSubnet'] }}"
-            podSubnet: "{{ kubernetes_init['podSubnet'] }}"
-            dnsDomain: cluster.local
-          kubernetesVersion: "{{ kubernetes_init['kubernetesVersion'] }}"
-          controlPlaneEndpoint: "{{ ansible_facts['knet']['ipv4']['address'] }}:6443"
-          apiServer:
-            certSANs:
-            - "{{ ansible_facts['fqdn'] }}"
-            timeoutForControlPlane: 10m0s
-          certificatesDir: "/etc/kubernetes/pki"
-          clusterName: "{{ kubernetes_init['clusterName'] }}"
-          controllerManager: {}
-          scheduler: {}          
-        - 
-          apiVersion: kubelet.config.k8s.io/v1beta1
-          kind: KubeletConfiguration
-          eventRecordQPS: 0
-          protectKernelDefaults: true
-          tlsCipherSuites:
-            - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-            - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-            - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
-            - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-            - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
-            - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-            - TLS_RSA_WITH_AES_256_GCM_SHA384
-            - TLS_RSA_WITH_AES_128_GCM_SHA256
+    # Init calico as CNI
+    - ansible.builtin.import_role:
+        name: labrats_work.modules_ansible.calico_init
+      become: no
+      vars:
+        yaml_configs:
+          - 
+            apiVersion: operator.tigera.io/v1
+            kind: Installation
+            metadata:
+              name: default
+            spec:
+              calicoNetwork:
+                ipPools:
+                - blockSize: 26
+                  cidr: "10.244.0.0/16"
+                  encapsulation: VXLANCrossSubnet
+                  natOutgoing: Enabled
+                  nodeSelector: all()
+          - 
+            apiVersion: operator.tigera.io/v1
+            kind: APIServer 
+            metadata: 
+              name: default 
+            spec: {}
 
-  # Calico Init
-  - ansible.builtin.import_role:
-      name: labrats_work.modules_ansible.calico_init
-    vars:
-      yaml_configs:
-        - 
-          apiVersion: operator.tigera.io/v1
-          kind: Installation
-          metadata:
-            name: default
-          spec:
-            calicoNetwork:
-              ipPools:
-              - blockSize: 26
-                cidr: "10.244.0.0/16"
-                encapsulation: VXLANCrossSubnet
-                natOutgoing: Enabled
-                nodeSelector: all()
-        - 
-          apiVersion: operator.tigera.io/v1
-          kind: APIServer 
-          metadata: 
-            name: default 
-          spec: {}
+    - name: Remove taints, this is a single node test cluster.
+      become: no
+      shell: kubectl taint nodes --all {{item}}
+      ignore_errors: true
+      with_items:
+      - node-role.kubernetes.io/control-plane-
+      - node-role.kubernetes.io/master-
 
 - name: Configure Workers
   hosts: worker

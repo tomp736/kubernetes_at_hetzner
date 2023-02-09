@@ -1,4 +1,0 @@
-%{for interface in interfaces~} 
-# interface with MAC address "${interface.mac_address}" will be assigned "${interface.name}"
-SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="${interface.mac_address}", NAME="${interface.name}"
-%{endfor~}

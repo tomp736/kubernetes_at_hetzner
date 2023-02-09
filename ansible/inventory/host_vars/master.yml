@@ -1,0 +1,6 @@
+kubernetes_init:
+  iface_name: knet
+  clusterName: k0
+  kubernetesVersion: "1.26.0"
+  serviceSubnet: "10.96.0.0/12"
+  podSubnet: "10.244.0.0/16"
