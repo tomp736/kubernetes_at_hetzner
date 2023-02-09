@@ -1,11 +1,41 @@
-- name: Configure Worker
-  hosts: haproxy
+- name: Configure HaProxy
+  hosts: s0haproxy
   remote_user: sysadmin
   become: yes
 
   collections:
   - labrats_work.modules_ansible
 
-  tasks:  
+  tasks:
   - ansible.builtin.import_role:
-      name: labrats_work.modules_ansible.haproxy
+      name: labrats_work.modules_ansible.systemd_haproxy
+
+  - name: Copy http error files.
+    ansible.builtin.copy:
+      src: "{{ item }}"
+      dest: "/etc/haproxy/errors/"
+      owner: haproxy
+      group: haproxy
+      mode: 0644
+    with_fileglob:
+      - haproxy/*.http
+
+  - name: Setup vars for template
+    ansible.builtin.set_fact: 
+      kubernetes: 
+        api: "{{ groups.master | list }}"
+        http: "{{ groups.worker | list }}"
+        https: "{{ groups.worker | list }}"
+
+  - name: Update haproxy config
+    ansible.builtin.template:
+      src: "files/haproxy/haproxy.cfg.j2"
+      dest: /etc/haproxy/haproxy.cfg
+      owner: haproxy
+      group: haproxy
+      mode: '0770'
+
+  - name: Service Restart
+    ansible.builtin.service:
+      name: haproxy
+      state: restarted

@@ -1,6 +1,7 @@
 [site:children]
 bastion
 metrics
+haproxy
 cluster
 
 [bastion]
@@ -25,6 +26,11 @@ worker
 [cluster:vars]
 %{~for node in bastion_nodes}
 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh sysadmin@${node.ansible_host} -o StrictHostKeyChecking=no -o Port=2222 -o ForwardAgent=yes -W %h:%p"'
+%{~endfor}
+
+[haproxy]
+%{~for node in haproxy_nodes}
+${node.name} ansible_host=${node.ansible_host}
 %{~endfor}
 
 [master]

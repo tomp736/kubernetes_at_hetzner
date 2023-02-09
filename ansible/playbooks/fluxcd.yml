@@ -1,5 +1,5 @@
 - name: Configure FluxCD
-  hosts: master
+  hosts: s0c0m0
   remote_user: sysadmin
   become: yes
 

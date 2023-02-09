@@ -167,6 +167,31 @@
             "network_zone": "eu-central",
             "ssh_user": "sysadmin",
             "ssh_port": "2222"
+        },
+        {
+            "id": "s0haproxy",
+            "networks": [
+                { 
+                    "id" : "mnet",
+                    "ip" : ""
+                },
+                { 
+                    "id" : "bnet",
+                    "ip" : ""
+                },
+                {
+                    "id" : "knet",
+                    "ip" : ""
+                }
+            ],
+            "name": "s0haproxy",
+            "location": "nbg1",
+            "image": "ubuntu-22.04",
+            "server_type": "cx11",
+            "nodetype": "haproxy",
+            "network_zone": "eu-central",
+            "ssh_user": "sysadmin",
+            "ssh_port": "2222"
         }
     ]
 }

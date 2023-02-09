@@ -39,12 +39,6 @@ jobs:
         echo "Create config.remote.tfbackend"
         sed -i 's|local|remote|g' terraform/providers.tf
     - 
-      name: Update Terraform Ref
-      run: |
-        sed -i 's|modules-terraform.git//modules/cloud-init?ref=main|modules-terraform.git//modules/cloud-init?ref=${{ inputs.TF_MODULES_REF }}|g' terraform/main.tf
-        sed -i 's|modules-terraform.git//modules/hetzner/network?ref=main|modules-terraform.git//modules/hetzner/network?ref=${{ inputs.TF_MODULES_REF }}|g' terraform/main.tf
-        sed -i 's|modules-terraform.git//modules/hetzner/node?ref=main|modules-terraform.git//modules/hetzner/node?ref=${{ inputs.TF_MODULES_REF }}|g' terraform/main.tf
-    - 
       name: Terraform Init
       run: terraform -chdir=terraform init -backend-config=config.remote.tfbackend
       env:

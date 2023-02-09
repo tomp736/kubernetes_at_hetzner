@@ -2,7 +2,7 @@
 
 module "networks" {
   for_each = local.config_networks
-  source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/network?ref=main"
+  source   = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/network?ref=1.0.4"
 
 
   network_name          = each.value.name
@@ -11,9 +11,15 @@ module "networks" {
 }
 
 module "bastion_node_group" {
-  source     = "./modules/node_group"
+  source = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node_group?ref=1.0.4"
   nodes      = local.config_nodes_bastion
-  public_key = var.public_key
+  public_keys = [
+    var.public_key
+  ]
+  sshd_config = {
+    ssh_user = "sysadmin"
+    ssh_port = "2222"
+  }
   networks_map = { for config_network in local.config_networks : config_network.id =>
     {
       name       = config_network.id,
@@ -23,13 +29,19 @@ module "bastion_node_group" {
 }
 
 module "master_node_group" {
-  source = "./modules/node_group"
+  source = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node_group?ref=1.0.4"
   depends_on = [
     module.bastion_node_group
   ]
   nodes        = local.config_nodes_master
   bastion_host = values(module.bastion_node_group.nodes)[0].ipv4_address
-  public_key   = var.public_key
+  public_keys = [
+    var.public_key
+  ]
+  sshd_config = {
+    ssh_user = "sysadmin"
+    ssh_port = "2222"
+  }
   networks_map = { for config_network in local.config_networks : config_network.id =>
     {
       name       = config_network.id,
@@ -39,13 +51,19 @@ module "master_node_group" {
 }
 
 module "worker_node_group" {
-  source = "./modules/node_group"
+  source = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node_group?ref=1.0.4"
   depends_on = [
     module.bastion_node_group
   ]
   nodes        = local.config_nodes_worker
   bastion_host = values(module.bastion_node_group.nodes)[0].ipv4_address
-  public_key   = var.public_key
+  public_keys = [
+    var.public_key
+  ]
+  sshd_config = {
+    ssh_user = "sysadmin"
+    ssh_port = "2222"
+  }
   networks_map = { for config_network in local.config_networks : config_network.id =>
     {
       name       = config_network.id,
@@ -55,13 +73,41 @@ module "worker_node_group" {
 }
 
 module "metrics_node_group" {
-  source = "./modules/node_group"
+  source = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node_group?ref=1.0.4"
   depends_on = [
     module.bastion_node_group
   ]
   nodes        = local.config_nodes_metrics
   bastion_host = values(module.bastion_node_group.nodes)[0].ipv4_address
-  public_key   = var.public_key
+  public_keys = [
+    var.public_key
+  ]
+  sshd_config = {
+    ssh_user = "sysadmin"
+    ssh_port = "2222"
+  }
+  networks_map = { for config_network in local.config_networks : config_network.id =>
+    {
+      name       = config_network.id,
+      hetzner_id = module.networks[config_network.id].hetzner_network.id
+    }
+  }
+}
+
+module "haproxy_node_group" {
+  source = "git::https://github.com/labrats-work/modules-terraform.git//modules/hetzner/node_group?ref=1.0.4"
+  depends_on = [
+    module.bastion_node_group
+  ]
+  nodes        = local.config_nodes_haproxy
+  bastion_host = values(module.bastion_node_group.nodes)[0].ipv4_address
+  public_keys = [
+    var.public_key
+  ]
+  sshd_config = {
+    ssh_user = "sysadmin"
+    ssh_port = "2222"
+  }
   networks_map = { for config_network in local.config_networks : config_network.id =>
     {
       name       = config_network.id,
@@ -88,6 +134,10 @@ resource "local_file" "ansible_inventory_site" {
       name         = node.name,
       ansible_host = node.ipv4_address
     }]
+    haproxy_nodes = [for node in module.haproxy_node_group.nodes : {
+      name         = node.name,
+      ansible_host = node.ipv4_address
+    }]
   })
   filename = "ansible_hosts_site"
 }
@@ -109,6 +159,10 @@ resource "local_file" "ansible_inventory_cluster" {
     metrics_nodes = [for node in module.metrics_node_group.nodes : {
       name         = node.name,
       ansible_host = node.networks[module.networks["bnet"].hetzner_network.id].ip
+    }]
+    haproxy_nodes = [for node in module.haproxy_node_group.nodes : {
+      name         = node.name,
+      ansible_host = node.ipv4_address
     }]
   })
   filename = "ansible_hosts_cluster"
